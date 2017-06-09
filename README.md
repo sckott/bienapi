@@ -1,9 +1,19 @@
 BIEN API
 ========
 
-Notes:
+## Authentication
 
-* API key required for all routes
+An API key is required for all routes. API keys can be requested from XXXX. Keys (aka tokens) are passed in a header like:
+
+```
+Authorization: token <your token>
+```
+
+Or as a curl request:
+
+```
+curl -H "Authorization: token <your token>" http://...
+```
 
 ## API Routes
 
@@ -16,7 +26,9 @@ Notes:
 * `/occurrence/genus/` Extract occurrence data for specified genus from BIEN
 * `/occurrence/family/` Extract occurrence data for specified family from BIEN
 * `/occurrence/spatial/` Extract occurrence data for specified polygons (WKT) or bounding box
-* `/occurrence/state/` Extract occurrence data for specified polygons (WKT)
+* `/occurrence/state/` Extract occurrence data for a state
+* `/occurrence/county/` Extract occurrence data for a county
+* `/occurrence/country/` Extract occurrence data for a country
 * `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN
 
 
@@ -56,8 +68,6 @@ Notes:
 * `/ranges/spatial/` Get range maps that intersect a WKT polygon or bounding box
 * `/ranges/species/` Get range maps for a species
 * `/ranges/species/intersect/` Get range maps that intersect the range of a species
-
-> Note: I'm confused as to the difference among the functions BIEN_ranges_intersect_species, BIEN_ranges_load_species, BIEN_ranges_species - so not sure if the above routes make sense
 
 ### `stem` routes
 
