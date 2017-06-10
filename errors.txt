@@ -1,0 +1,108 @@
+# errors from loading with pg_restore
+
+pg_restore: [archiver (db)] Error while PROCESSING TOC:
+pg_restore: [archiver (db)] Error from TOC entry 286; 1259 3690221946 TABLE observations_union bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  schema "postgis" does not exist
+LINE 4:     geom postgis.geometry,
+                 ^
+    Command was: CREATE TABLE observations_union (
+    gid bigint NOT NULL,
+    species text NOT NULL,
+    geom postgis.geometry,
+    CONSTRA...
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "observations_union" does not exist
+    Command was: ALTER TABLE observations_union OWNER TO bien;
+
+
+pg_restore: [archiver (db)] Error from TOC entry 4041; 0 0 SEQUENCE OWNED BY observations_union_gid_seq bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "observations_union" does not exist
+    Command was: ALTER SEQUENCE observations_union_gid_seq OWNED BY observations_union.gid;
+
+
+
+pg_restore: [archiver (db)] Error from TOC entry 265; 1259 3689840689 TABLE ranges bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  schema "postgis" does not exist
+LINE 3:     geom postgis.geometry,
+                 ^
+    Command was: CREATE TABLE ranges (
+    species character varying(75) NOT NULL,
+    geom postgis.geometry,
+    gid integer NOT NULL,
+    d...
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "ranges" does not exist
+    Command was: ALTER TABLE ranges OWNER TO bien;
+
+
+pg_restore: [archiver (db)] Error from TOC entry 4047; 0 0 SEQUENCE OWNED BY ranges_gid_seq bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "ranges" does not exist
+    Command was: ALTER SEQUENCE ranges_gid_seq OWNED BY ranges.gid;
+
+
+
+pg_restore: [archiver (db)] Error from TOC entry 270; 1259 3690005295 TABLE view_full_occurrence_individual bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  schema "postgis" does not exist
+LINE 87:     geom postgis.geometry(Point,4326),
+                  ^
+    Command was: CREATE TABLE view_full_occurrence_individual (
+    taxonobservation_id integer,
+    observation_type character varying(20),
+...
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "view_full_occurrence_individual" does not exist
+    Command was: ALTER TABLE view_full_occurrence_individual OWNER TO bien;
+
+
+pg_restore: [archiver (db)] Error from TOC entry 281; 1259 3690069462 TABLE world_geom bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  schema "postgis" does not exist
+LINE 3:     geom postgis.geometry(MultiPolygon,4326),
+                 ^
+    Command was: CREATE TABLE world_geom (
+    ogc_fid integer DEFAULT nextval('public_bak.world_geom_ogc_fid_seq'::regclass) NOT NULL,
+    g...
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "world_geom" does not exist
+    Command was: ALTER TABLE world_geom OWNER TO bien;
+
+
+pg_restore: [archiver (db)] Error from TOC entry 3613; 2604 3690221949 DEFAULT gid bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "observations_union" does not exist
+    Command was: ALTER TABLE ONLY observations_union ALTER COLUMN gid SET DEFAULT nextval('observations_union_gid_seq'::regclass);
+
+
+
+pg_restore: [archiver (db)] Error from TOC entry 3601; 2604 3689840744 DEFAULT gid bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "ranges" does not exist
+    Command was: ALTER TABLE ONLY ranges ALTER COLUMN gid SET DEFAULT nextval('ranges_gid_seq'::regclass);
+
+
+
+^@^@^@^@^@^@^@^@^@^@^@^@pg_restore: [archiver (db)] Error from TOC entry 4007; 0 3690221946 TABLE DATA observations_union bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "observations_union" does not exist
+    Command was: COPY observations_union (gid, species, geom) FROM stdin;
+
+pg_restore: [archiver (db)] Error from TOC entry 3987; 0 3689840689 TABLE DATA ranges bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "ranges" does not exist
+    Command was: COPY ranges (species, geom, gid, datapolicy) FROM stdin;
+
+^@^@pg_restore: [archiver (db)] Error from TOC entry 3992; 0 3690005295 TABLE DATA view_full_occurrence_individual bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "view_full_occurrence_individual" does not exist
+    Command was: COPY view_full_occurrence_individual (taxonobservation_id, observation_type, plot_metadata_id, datasource_id, datasource, da...
+^@^@pg_restore: [archiver (db)] Error from TOC entry 4002; 0 3690069462 TABLE DATA world_geom bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "world_geom" does not exist
+    Command was: COPY world_geom (ogc_fid, geom, objectid, uid, id_0, iso, name_0, id_1, name_1, varname_1, nl_name_1, hasc_1, ccn_1, cca_1, ...
+^@^@^@pg_restore: [archiver (db)] Error from TOC entry 3826; 2606 3690228516 CONSTRAINT observations_union_pkey bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "observations_union" does not exist
+    Command was: ALTER TABLE ONLY observations_union
+    ADD CONSTRAINT observations_union_pkey PRIMARY KEY (gid);
+
+
+
+pg_restore: [archiver (db)] Error from TOC entry 3689; 2606 3690005082 CONSTRAINT ranges_pkey bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "ranges" does not exist
+    Command was: ALTER TABLE ONLY ranges
+    ADD CONSTRAINT ranges_pkey PRIMARY KEY (gid);
+
+
+
+pg_restore: [archiver (db)] Error from TOC entry 3816; 2606 3690069470 CONSTRAINT world_geom_pkey bien
+pg_restore: [archiver (db)] could not execute query: ERROR:  relation "world_geom" does not exist
+    Command was: ALTER TABLE ONLY world_geom
+    ADD CONSTRAINT world_geom_pkey PRIMARY KEY (ogc_fid);

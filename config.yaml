@@ -1,0 +1,11 @@
+---
+caching:
+  expires: 3600
+db:
+  adapter: postgresql
+  encoding: utf8
+  host: localhost
+  username: bien
+  password:
+  port: 5432
+  database: public_vegbien
