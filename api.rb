@@ -5,12 +5,12 @@ require 'sinatra'
 require_relative 'models/models'
 
 # feature flag: toggle redis
-$use_redis = false
+$use_redis = true
 
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 
-# $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
-#                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
+$redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
+                   port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
 ActiveSupport::Deprecation.silenced = true
 ActiveRecord::Base.establish_connection($config['db'])
@@ -101,17 +101,17 @@ class API < Sinatra::Application
   end
 
   # generate routes from the models
-  # Models.models.each do |model_name|
-  #   model = Models.const_get(model_name)
-  #   get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
-  #     begin
-  #       data = model.endpoint(params)
-  #       raise Exception.new('no results found') if data.length.zero?
-  #       { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
-  #     rescue Exception => e
-  #       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-  #     end
-  #   end
-  # end
+  Models.models.each do |model_name|
+    model = Models.const_get(model_name)
+    get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
+      begin
+        data = model.endpoint(params)
+        raise Exception.new('no results found') if data.length.zero?
+        { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      rescue Exception => e
+        halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+      end
+    end
+  end
 
 end

@@ -6,6 +6,6 @@ db:
   encoding: utf8
   host: localhost
   username: bien
-  password:
+  password: bien
   port: 5432
   database: public_vegbien
