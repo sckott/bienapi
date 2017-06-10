@@ -5,7 +5,7 @@ module Models
     constants.select { |c| const_get(c).is_a?(Class) }
   end
 
-  class iucn < Base; end
-  class usda < Base; end
+  class Iucn < Base; end
+  class Usda < Base; end
 
 end

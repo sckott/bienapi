@@ -9,8 +9,8 @@ $use_redis = false
 
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 
-$redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
-                   port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
+# $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
+#                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
 
 ActiveSupport::Deprecation.silenced = true
 ActiveRecord::Base.establish_connection($config['db'])
