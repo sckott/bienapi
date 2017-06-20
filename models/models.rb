@@ -8,8 +8,6 @@ module Models
   class Iucn < Base; end
   class Usda < Base; end
 
-  SELECT species FROM bien_species_all ORDER BY species;
-
   class List < Base
     self.table_name = 'bien_species_all'
 
