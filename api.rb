@@ -114,4 +114,24 @@ class API < Sinatra::Application
     end
   end
 
+  get '/list/?' do
+    begin
+      data = List.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/list/country/?' do
+    begin
+      data = ListCountry.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
 end
