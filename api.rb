@@ -97,7 +97,7 @@ class API < Sinatra::Application
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
-    { routes: %w( /heartbeat ) + db_routes }.to_json
+    { routes: %w( /heartbeat /list /list/country /plot/dataset ) + db_routes }.to_json
   end
 
   # generate routes from the models
@@ -127,6 +127,16 @@ class API < Sinatra::Application
   get '/list/country/?' do
     begin
       data = ListCountry.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/plot/dataset/?' do
+    begin
+      data = PlotDataset.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
     rescue Exception => e
