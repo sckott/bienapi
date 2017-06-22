@@ -97,7 +97,7 @@ class API < Sinatra::Application
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
-    { routes: %w( /heartbeat /list /list/country /plot/dataset ) + db_routes }.to_json
+    { routes: %w( /heartbeat /list /list/country /plot/metadata ) + db_routes }.to_json
   end
 
   # generate routes from the models
