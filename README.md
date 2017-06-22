@@ -32,13 +32,20 @@ curl -H "Authorization: token <your token>" http://...
 * `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN
 
 
-### `list` routes
+### species `list` routes
 
 * `/list/` Extract species list
 * `/list/county/` Extract species list by county
 * `/list/country/` Extract species list by country
 * `/list/state/` Extract a species list by state/province
 * `/list/spatial/` Extract a list of species within a given WKT
+
+examples:
+
+```
+curl 'http://129.114.111.129:8876/list/country?country=Canada'
+curl 'http://129.114.111.129:8876/list?country=Canada'
+```
 
 ### `meta` routes
 
@@ -61,6 +68,13 @@ curl -H "Authorization: token <your token>" http://...
 * `/plot/name/` Get plot data by plot name
 * `/plot/state/` Get plot data from specified states/provinces
 
+examples:
+
+```
+curl 'http://129.114.111.129:8876/plot/metadata'
+curl 'http://129.114.111.129:8876/plot/protocols'
+```
+
 ### `ranges` routes
 
 * `/ranges/genus/` Get range maps for a genus
@@ -82,6 +96,12 @@ curl -H "Authorization: token <your token>" http://...
 * `/taxonomy/genus/` Extract taxonomic information for genera
 * `/taxonomy/species/` Extract taxonomic information for species
 
+examples:
+
+```
+curl 'http://129.114.111.129:8876/taxonomy/species?species=Cannabis%20sativa'
+```
+
 ### `trait` routes
 
 * `/traits/` List all available types of trait data
@@ -95,3 +115,10 @@ curl -H "Authorization: token <your token>" http://...
 * `/traits/count/` Count the number of trait observations for each species in the BIEN database
 
 Note: `mean` removed since that's done client side.
+
+examples:
+
+```
+curl 'http://129.114.111.129:8876/traits/'
+curl 'http://129.114.111.129:8876/traits/family/?family=Poaceae'
+```

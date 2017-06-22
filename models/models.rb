@@ -196,7 +196,7 @@ class TraitsFamily < ActiveRecord::Base
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_family scrubbed_genus scrubbed_species_binomial trait_name trait_value unit method latitude longitude elevation url_source project_pi project_pi_contact access id)
     select(cols.join(', '))
-        .where(sprintf("scrubbed_family in ( '%s' )"), params[:family])
+        .where(sprintf("scrubbed_family in ( '%s' )", params[:family]))
         .order("scrubbed_family, scrubbed_species_binomial")
         .limit(params[:limit] || 10)
         .offset(params[:offset])
