@@ -142,7 +142,6 @@ class API < Sinatra::Application
   end
 
   get '/list/?' do
-    # halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'])
     begin
       data = List.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
