@@ -7,6 +7,9 @@ require_relative 'models/models'
 # feature flag: toggle redis
 $use_redis = false
 
+# api key
+$api_key = ENV['BIEN_API_KEY']
+
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 
 $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
@@ -61,6 +64,11 @@ class API < Sinatra::Application
 
   end
 
+  before do
+    pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
+    halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'])
+  end
+
   after do
     # cache response in redis
     if $config['caching'] &&
@@ -71,6 +79,12 @@ class API < Sinatra::Application
       request.path_info != ""
 
       $redis.set(@cache_key, response.body[0], ex: $config['caching']['expires'])
+    end
+  end
+
+  helpers do
+    def valid_key?(key)
+      key == $api_key
     end
   end
 
@@ -128,6 +142,7 @@ class API < Sinatra::Application
   end
 
   get '/list/?' do
+    # halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'])
     begin
       data = List.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?

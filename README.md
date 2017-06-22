@@ -12,8 +12,10 @@ Authorization: token <your token>
 Or as a curl request:
 
 ```
-curl -H "Authorization: token <your token>" http://...
+curl -H "Authorization: foobar" http://localhost:8876/list
 ```
+
+send Scott an email (scott@ropensci.org) about the API key if you want access
 
 ## API Routes
 
