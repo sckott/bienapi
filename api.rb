@@ -97,7 +97,7 @@ class API < Sinatra::Application
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
-    { routes: %w( /heartbeat /list /list/country /plot/metadata ) + db_routes }.to_json
+    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols ) + db_routes }.to_json
   end
 
   # generate routes from the models
@@ -134,9 +134,22 @@ class API < Sinatra::Application
     end
   end
 
+
+  # plot routes
   get '/plot/metadata/?' do
     begin
       data = PlotMetadata.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  ## List available sampling protocols
+  get '/plot/protocols/?' do
+    begin
+      data = PlotProtocols.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
     rescue Exception => e
