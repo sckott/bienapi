@@ -5,7 +5,7 @@ require 'sinatra'
 require_relative 'models/models'
 
 # feature flag: toggle redis
-$use_redis = true
+$use_redis = false
 
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
 
@@ -14,13 +14,26 @@ $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
 
 ActiveSupport::Deprecation.silenced = true
 ActiveRecord::Base.establish_connection($config['db'])
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 class API < Sinatra::Application
+  configure do
+    # Don't log them. We'll do that ourself
+    set :dump_errors, false
+
+    # Don't capture any errors. Throw them up the stack
+    set :raise_errors, true
+
+    # Disable internal middleware for presenting errors
+    # as useful HTML pages
+    set :show_exceptions, false
+  end
+
   before do
-    # puts '[env]'
-    # p env
-    # puts '[Params]'
-    # p params
+    puts '[env]'
+    p env
+    puts '[Params]'
+    p params
 
     $route = request.path
 
@@ -97,7 +110,7 @@ class API < Sinatra::Application
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
-    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /taxonomy/species/ ) + db_routes }.to_json
+    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /traits/ /traits/family ) + db_routes }.to_json
   end
 
   # generate routes from the models
@@ -157,16 +170,40 @@ class API < Sinatra::Application
     end
   end
 
-  # taxonomy routes
-  ## by species
-  get '/taxonomy/species/?' do
+  # trait routes
+  ## all traits
+  get '/traits/?' do
     begin
-      data = TaxonomySpecies.endpoint(params)
+      data = Traits.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
   end
+
+  ## traits by family
+  get '/traits/family/?' do
+    begin
+      data = TraitsFamily.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+
+  # taxonomy routes
+  ## by species
+  # get '/taxonomy/species/?' do
+  #   begin
+  #     data = TaxonomySpecies.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
 end
