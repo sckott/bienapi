@@ -134,9 +134,9 @@ class API < Sinatra::Application
     end
   end
 
-  get '/plot/dataset/?' do
+  get '/plot/metadata/?' do
     begin
-      data = PlotDataset.endpoint(params)
+      data = PlotMetadata.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
     rescue Exception => e
