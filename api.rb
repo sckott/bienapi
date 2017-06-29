@@ -89,13 +89,17 @@ class API < Sinatra::Application
     end
 
     def serve_data(ha, data)
+      # puts '[CONTENT_TYPE]'
+      # puts request.env['CONTENT_TYPE'].nil?
       case request.env['CONTENT_TYPE']
       when 'application/json'
         ha.to_json
       when 'text/csv'
         to_csv(data)
+      when nil
+        ha.to_json
       else
-        halt 415, { error: 'Unsupported media type' }.to_json
+        halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json and text/csv; no Content-type equals application/json' }.to_json
       end
     end
   end
