@@ -1,7 +1,8 @@
 require 'bundler/setup'
-%w(yaml json digest redis).each { |req| require req }
+%w(yaml json digest redis csv).each { |req| require req }
 Bundler.require(:default)
 require 'sinatra'
+require_relative 'funs'
 require_relative 'models/models'
 
 # feature flag: toggle redis
@@ -33,10 +34,10 @@ class API < Sinatra::Application
   end
 
   before do
-    puts '[env]'
-    p env
-    puts '[Params]'
-    p params
+    # puts '[env]'
+    # p env
+    # puts '[Params]'
+    # p params
 
     $route = request.path
 
@@ -86,10 +87,22 @@ class API < Sinatra::Application
     def valid_key?(key)
       key == $api_key
     end
+
+    def serve_data(ha, data)
+      case request.env['CONTENT_TYPE']
+      when 'application/json'
+        ha.to_json
+      when 'text/csv'
+        to_csv(data)
+      else
+        halt 415, { error: 'Unsupported media type' }.to_json
+      end
+    end
   end
 
   configure do
     mime_type :apidocs, 'text/html'
+    mime_type :csv, 'text/csv'
   end
 
   # handle missed route
@@ -134,7 +147,8 @@ class API < Sinatra::Application
       begin
         data = model.endpoint(params)
         raise Exception.new('no results found') if data.length.zero?
-        { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+        ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+        serve_data(ha, data)
       rescue Exception => e
         halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
       end
@@ -145,7 +159,8 @@ class API < Sinatra::Application
     begin
       data = List.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
@@ -155,7 +170,8 @@ class API < Sinatra::Application
     begin
       data = ListCountry.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
@@ -167,7 +183,8 @@ class API < Sinatra::Application
     begin
       data = PlotMetadata.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
@@ -178,7 +195,8 @@ class API < Sinatra::Application
     begin
       data = PlotProtocols.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
@@ -190,7 +208,8 @@ class API < Sinatra::Application
     begin
       data = Traits.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
@@ -201,7 +220,8 @@ class API < Sinatra::Application
     begin
       data = TraitsFamily.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
