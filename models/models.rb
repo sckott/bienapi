@@ -72,8 +72,7 @@ class PlotMetadata < ActiveRecord::Base
       end
     end
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    where(params.select { |param| fields.any? { |s| s.to_s.casecmp(param.to_s)==0 } })
-        .limit(params[:limit] || 10)
+    limit(params[:limit] || 10)
         .offset(params[:offset])
         .select(params[:fields])
   end
