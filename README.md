@@ -19,8 +19,10 @@ send Scott an email (scott@ropensci.org) about the API key if you want access
 
 ## API Routes
 
-* `/` base route - a pretty landing page with info
-* `/heartbeat/` list all routes
+Those checked off have been implemented:
+
+- [x] `/` base route - a pretty landing page with info
+- [x] `/heartbeat/` list all routes
 
 ### `occurrence` routes
 
@@ -36,8 +38,8 @@ send Scott an email (scott@ropensci.org) about the API key if you want access
 
 ### species `list` routes
 
-* `/list/` Extract species list
-* `/list/county/` Extract species list by county
+- [x] `/list/` Extract species list (~ `BIEN::BIEN_list_all`)
+- [x] `/list/county/` Extract species list by county (~ `BIEN::BIEN_list_country`)
 * `/list/country/` Extract species list by country
 * `/list/state/` Extract a species list by state/province
 * `/list/spatial/` Extract a list of species within a given WKT
@@ -64,9 +66,9 @@ curl 'http://129.114.111.129:8876/list?country=Canada'
 * `/plot/dataset/` Get plot data by dataset name
 * `/plot/datasources/` List available data sources
 * `/plot/datasources/<protocol name>` Get plot data by data source name
-* `/plot/protocols/` List available sampling protocols
+- [x] * `/plot/protocols/` List available sampling protocols (~ `BIEN::BIEN_plot_list_sampling_protocols`)
 * `/plot/protocols/<protocol name>` Get plot data by protocol name
-* `/plot/metadata/` Get all plot metadata
+- [x] * `/plot/metadata/` Get all plot metadata  (~ `BIEN::BIEN_plot_metadata`)
 * `/plot/name/` Get plot data by plot name
 * `/plot/state/` Get plot data from specified states/provinces
 
@@ -106,8 +108,8 @@ curl 'http://129.114.111.129:8876/taxonomy/species?species=Cannabis%20sativa'
 
 ### `trait` routes
 
-* `/traits/` List all available types of trait data
-* `/traits/family/` Extract all trait data for given families
+- [x] `/traits/` List all available types of trait data (~ `BIEN::BIEN_trait_list`)
+- [x] `/traits/family/` Extract all trait data for given families (~ `BIEN::BIEN_trait_family`)
 * `/traits/family/<trait>` Extract specific trait data for given families
 * `/traits/genus/` Extract all trait data for given genera
 * `/traits/genus/<trait>` Extract specific trait data for given genera
@@ -124,3 +126,10 @@ examples:
 curl 'http://129.114.111.129:8876/traits/'
 curl 'http://129.114.111.129:8876/traits/family/?family=Poaceae'
 ```
+
+
+### other routes
+
+- [x] `/usda`
+- [x] `/iucn`
+
