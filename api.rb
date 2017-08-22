@@ -231,17 +231,17 @@ class API < Sinatra::Application
     end
   end
 
-
   # taxonomy routes
   ## by species
-  # get '/taxonomy/species/?' do
-  #   begin
-  #     data = TaxonomySpecies.endpoint(params)
-  #     raise Exception.new('no results found') if data.length.zero?
-  #     { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }.to_json
-  #   rescue Exception => e
-  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-  #   end
-  # end
+  get '/taxonomy/species/?' do
+    begin
+      data = TaxonomySpecies.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
 
 end
