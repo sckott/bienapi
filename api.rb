@@ -2,6 +2,7 @@ require 'bundler/setup'
 %w(yaml json digest redis csv).each { |req| require req }
 Bundler.require(:default)
 require 'sinatra'
+require "sinatra/multi_route"
 require_relative 'funs'
 require_relative 'models/models'
 
