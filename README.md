@@ -26,14 +26,23 @@ Those checked off have been implemented:
 
 ### `occurrence` routes
 
-* `/occurrence/species/` Extract occurrence data for specified species from BIEN
-* `/occurrence/genus/` Extract occurrence data for specified genus from BIEN
-* `/occurrence/family/` Extract occurrence data for specified family from BIEN
-* `/occurrence/spatial/` Extract occurrence data for specified polygons (WKT) or bounding box
-* `/occurrence/state/` Extract occurrence data for a state
-* `/occurrence/county/` Extract occurrence data for a county
-* `/occurrence/country/` Extract occurrence data for a country
-* `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN
+- [x] `/occurrence/species/` Extract occurrence data for specified species from BIEN (~ `BIEN::BIEN_occurrence_species`)
+- [x] `/occurrence/genus/` Extract occurrence data for specified genus from BIEN (~ `BIEN::BIEN_occurrence_genus`)
+- [x] `/occurrence/family/` Extract occurrence data for specified family from BIEN (~ `BIEN::BIEN_occurrence_family`)
+- [x] `/occurrence/spatial/` Extract occurrence data for specified polygons (WKT) or bounding box (~ `BIEN::BIEN_occurrence_spatialpolygons`)
+* `/occurrence/state/` Extract occurrence data for a state (~ `BIEN::BIEN_occurrence_state`)
+* `/occurrence/county/` Extract occurrence data for a county (~ `BIEN::BIEN_occurrence_county`)
+* `/occurrence/country/` Extract occurrence data for a country (~ `BIEN::BIEN_occurrence_country`)
+* `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN (~ `BIEN::BIEN_occurrence_records_per_species`)
+
+examples:
+
+```
+curl 'http://bienapi.club/occurrence/species?species=Pinus%20contorta'
+curl 'http://bienapi.club/occurrence/genus?genus=Pinus'
+curl 'http://bienapi.club/occurrence/family?family=Pinaceae'
+curl -XPOST 'http://bienapi.club/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max:37.29; lon_min=-117.13; lon_max=-108.62"
+```
 
 
 ### species `list` routes

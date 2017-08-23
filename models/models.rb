@@ -192,7 +192,7 @@ class OccurrenceSpecies < ActiveRecord::Base
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
     select(cols.join(', '))
-        .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND (is_cultivated = 0 OR is_cultivated IS NULL)", params[:species]))
+        .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND higher_plant_group IS NOT NULL AND (is_geovalid = 1 OR is_geovalid IS NULL)", params[:species]))
         .order("scrubbed_species_binomial")
         .limit(params[:limit] || 10)
         .offset(params[:offset])
@@ -209,4 +209,74 @@ end
 #   (is_geovalid = 1 OR is_geovalid IS NULL)
 # ORDER BY scrubbed_species_binomial
 
+class OccurrenceGenus < ActiveRecord::Base
+  self.table_name = 'view_full_occurrence_individual'
 
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    %i(limit offset).each do |p|
+      unless params[p].nil?
+        begin
+          params[p] = Integer(params[p])
+        rescue ArgumentError
+          raise Exception.new("#{p.to_s} is not an integer")
+        end
+      end
+    end
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    cols = %w(scrubbed_genus scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
+    select(cols.join(', '))
+        .where(sprintf("scrubbed_genus in ( '%s' ) AND higher_plant_group IS NOT NULL AND (is_geovalid = 1 OR is_geovalid IS NULL)", params[:genus]))
+        .order("scrubbed_species_binomial")
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+class OccurrenceFamily < ActiveRecord::Base
+  self.table_name = 'view_full_occurrence_individual'
+
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    %i(limit offset).each do |p|
+      unless params[p].nil?
+        begin
+          params[p] = Integer(params[p])
+        rescue ArgumentError
+          raise Exception.new("#{p.to_s} is not an integer")
+        end
+      end
+    end
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    cols = %w(scrubbed_family scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
+    select(cols.join(', '))
+        .where(sprintf("scrubbed_family in ( '%s' ) AND higher_plant_group IS NOT NULL AND (is_geovalid = 1 OR is_geovalid IS NULL)", params[:family]))
+        .order("scrubbed_species_binomial")
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+class OccurrenceSpatial < ActiveRecord::Base
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    %i(limit offset).each do |p|
+      unless params[p].nil?
+        begin
+          params[p] = Integer(params[p])
+        rescue ArgumentError
+          raise Exception.new("#{p.to_s} is not an integer")
+        end
+      end
+    end
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    cols = %w(scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code a.datasource_id)
+    select(cols.join(', '))
+        .where("(SELECT * FROM view_full_occurrence_individual WHERE higher_plant_group IS NOT NULL AND is_geovalid =1 AND latitude BETWEEN :lat_min AND :lat_max AND longitude BETWEEN :lon_min AND :lon_max) a
+            WHERE st_intersects(ST_GeographyFromText('SRID=4326; :wkt'), a.geom) AND (is_cultivated = 0 OR is_cultivated IS NULL) AND is_new_world = 1  AND ( native_status IS NULL OR native_status NOT IN ( 'I', 'Ie' ) )     AND higher_plant_group IS NOT NULL AND (is_geovalid = 1 OR is_geovalid IS NULL) ",
+            {lat_min: params[:lat_min], lat_max: params[:lat_max], lon_min: params[:lon_min], lon_max: params[:lon_max], wkt: params[:wkt]})
+        .order("scrubbed_species_binomial")
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end

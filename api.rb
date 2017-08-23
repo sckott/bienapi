@@ -48,9 +48,9 @@ class API < Sinatra::Application
     cache_control :public, :must_revalidate, max_age: 60
 
     # prevent certain verbs
-    if request.request_method != 'GET'
-      halt 405
-    end
+    # if request.request_method != 'GET'
+    #   halt 405
+    # end
 
     # use redis caching
     if $config['caching'] && $use_redis
@@ -102,6 +102,13 @@ class API < Sinatra::Application
         halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json and text/csv; no Content-type equals application/json' }.to_json
       end
     end
+
+    # if method not allowed, halt with error
+    def halt_method
+      if request.request_method != 'GET'
+        halt 405
+      end
+    end
   end
 
   configure do
@@ -119,6 +126,11 @@ class API < Sinatra::Application
     halt 500, { error: 'server error' }.to_json
   end
 
+  # method not allowed
+  error 405 do
+    halt 405, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'Method Not Allowed' })
+  end
+
   # handler - redirects any /foo -> /foo/
   #  - if has any query params, passes to handler as before
   # get %r{(/.*[^\/])$} do
@@ -132,12 +144,14 @@ class API < Sinatra::Application
   # default to landing page
   ## used to go to /heartbeat
   get '/?' do
+    halt_method
     content_type :apidocs
     send_file File.join(settings.public_folder, '/index.html')
   end
 
   # route listing route
   get '/heartbeat/?' do
+    halt_method
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
@@ -160,6 +174,7 @@ class API < Sinatra::Application
   end
 
   get '/list/?' do
+    halt_method
     begin
       data = List.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
@@ -171,6 +186,7 @@ class API < Sinatra::Application
   end
 
   get '/list/country/?' do
+    halt_method
     begin
       data = ListCountry.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
@@ -184,6 +200,7 @@ class API < Sinatra::Application
 
   # plot routes
   get '/plot/metadata/?' do
+    halt_method
     begin
       data = PlotMetadata.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
@@ -196,6 +213,7 @@ class API < Sinatra::Application
 
   ## List available sampling protocols
   get '/plot/protocols/?' do
+    halt_method
     begin
       data = PlotProtocols.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
@@ -209,6 +227,7 @@ class API < Sinatra::Application
   # trait routes
   ## all traits
   get '/traits/?' do
+    halt_method
     begin
       data = Traits.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
@@ -221,6 +240,7 @@ class API < Sinatra::Application
 
   ## traits by family
   get '/traits/family/?' do
+    halt_method
     begin
       data = TraitsFamily.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
@@ -234,10 +254,50 @@ class API < Sinatra::Application
   # occurrence routes
   ## species
   get '/occurrence/species/?' do
+    halt_method
     begin
       data = OccurrenceSpecies.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  ## genus
+  get '/occurrence/genus/?' do
+    halt_method
+    begin
+      data = OccurrenceGenus.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  ## family
+  get '/occurrence/family/?' do
+    halt_method
+    begin
+      data = OccurrenceFamily.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  ## family
+  post '/occurrence/spatial/?' do
+    halt_method
+    begin
+      data = OccurrenceSpatial.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil ).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
@@ -257,5 +317,10 @@ class API < Sinatra::Application
   #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
   #   end
   # end
+
+  # prevent some routes
+  route :copy, :patch, :put, :options, :trace, :delete, '/*' do
+    halt 405
+  end
 
 end
