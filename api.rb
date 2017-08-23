@@ -23,21 +23,21 @@ ActiveRecord::Base.logger = Logger.new(STDOUT)
 class API < Sinatra::Application
   configure do
     # Don't log them. We'll do that ourself
-    set :dump_errors, false
+    set :dump_errors, true
 
     # Don't capture any errors. Throw them up the stack
     set :raise_errors, true
 
     # Disable internal middleware for presenting errors
     # as useful HTML pages
-    set :show_exceptions, false
+    set :show_exceptions, true
   end
 
   before do
-    # puts '[env]'
-    # p env
-    # puts '[Params]'
-    # p params
+    puts '[env]'
+    p env
+    puts '[Params]'
+    p params
 
     $route = request.path
 
@@ -231,11 +231,11 @@ class API < Sinatra::Application
     end
   end
 
-  # taxonomy routes
-  ## by species
-  get '/taxonomy/species/?' do
+  # occurrence routes
+  ## species
+  get '/occurrence/species/?' do
     begin
-      data = TaxonomySpecies.endpoint(params)
+      data = OccurrenceSpecies.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
@@ -243,5 +243,19 @@ class API < Sinatra::Application
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
   end
+
+
+  # taxonomy routes
+  ## by species
+  # get '/taxonomy/species/?' do
+  #   begin
+  #     data = TaxonomySpecies.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
 end
