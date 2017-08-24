@@ -152,7 +152,6 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    halt_method
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
