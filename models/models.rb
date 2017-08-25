@@ -100,6 +100,38 @@ class PlotProtocols < ActiveRecord::Base
   end
 end
 
+class PlotName < ActiveRecord::Base
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    %i(limit offset).each do |p|
+      unless params[p].nil?
+        begin
+          params[p] = Integer(params[p])
+        rescue ArgumentError
+          raise Exception.new("#{p.to_s} is not an integer")
+        end
+      end
+    end
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    cols = %w(view_full_occurrence_individual.plot_name subplot view_full_occurrence_individual.elevation_m  view_full_occurrence_individual.plot_area_ha
+      view_full_occurrence_individual.sampling_protocol view_full_occurrence_individual.recorded_by  view_full_occurrence_individual.scrubbed_species_binomial
+      view_full_occurrence_individual.individual_count view_full_occurrence_individual.latitude  view_full_occurrence_individual.longitude view_full_occurrence_individual.date_collected
+      view_full_occurrence_individual.datasource view_full_occurrence_individual.dataset view_full_occurrence_individual.dataowner
+      view_full_occurrence_individual.custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id
+    )
+    select(cols.join(', '))
+        .where("(SELECT * FROM view_full_occurrence_individual WHERE view_full_occurrence_individual.plot_name in ( ':plot' )
+              AND higher_plant_group IS NOT NULL
+              AND (is_geovalid = 1 OR is_geovalid IS NULL)
+              AND observation_type='plot'
+              ORDER BY country,plot_name,subplot,scrubbed_species_binomial
+             ) as view_full_occurrence_individual", {plot: params[:plot]})
+        .joins("LEFT JOIN plot_metadata ON (view_full_occurrence_individual.plot_metadata_id=plot_metadata.plot_metadata_id)")
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
 class TaxonomySpecies < ActiveRecord::Base
   self.table_name = 'bien_taxonomy'
 

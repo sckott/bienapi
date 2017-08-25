@@ -75,10 +75,10 @@ curl 'http://129.114.111.129:8876/list?country=Canada'
 * `/plot/dataset/` Get plot data by dataset name
 * `/plot/datasources/` List available data sources
 * `/plot/datasources/<protocol name>` Get plot data by data source name
-- [x] * `/plot/protocols/` List available sampling protocols (~ `BIEN::BIEN_plot_list_sampling_protocols`)
+- [x] `/plot/protocols/` List available sampling protocols (~ `BIEN::BIEN_plot_list_sampling_protocols`)
 * `/plot/protocols/<protocol name>` Get plot data by protocol name
-- [x] * `/plot/metadata/` Get all plot metadata  (~ `BIEN::BIEN_plot_metadata`)
-* `/plot/name/` Get plot data by plot name
+- [x] `/plot/metadata/` Get all plot metadata  (~ `BIEN::BIEN_plot_metadata`)
+- [x] `/plot/name/` Get plot data by plot name (~ `BIEN::BIEN_plot_name`)
 * `/plot/state/` Get plot data from specified states/provinces
 
 examples:
