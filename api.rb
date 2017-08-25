@@ -253,56 +253,56 @@ class API < Sinatra::Application
 
   # occurrence routes
   ## species
-  get '/occurrence/species/?' do
-    halt_method
-    begin
-      data = OccurrenceSpecies.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # get '/occurrence/species/?' do
+  #   halt_method
+  #   begin
+  #     data = OccurrenceSpecies.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
-  ## genus
-  get '/occurrence/genus/?' do
-    halt_method
-    begin
-      data = OccurrenceGenus.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # ## genus
+  # get '/occurrence/genus/?' do
+  #   halt_method
+  #   begin
+  #     data = OccurrenceGenus.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
-  ## family
-  get '/occurrence/family/?' do
-    halt_method
-    begin
-      data = OccurrenceFamily.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # ## family
+  # get '/occurrence/family/?' do
+  #   halt_method
+  #   begin
+  #     data = OccurrenceFamily.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
-  ## family
-  post '/occurrence/spatial/?' do
-    halt_method
-    begin
-      data = OccurrenceSpatial.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil ).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # ## family
+  # post '/occurrence/spatial/?' do
+  #   halt_method
+  #   begin
+  #     data = OccurrenceSpatial.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil ).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
 
   # taxonomy routes
