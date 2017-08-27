@@ -3,7 +3,8 @@ source "http://rubygems.org/"
 gem 'multi_json', '~> 1.12', '>= 1.12.1'
 gem 'redis', '~> 3.3', '>= 3.3.3'
 gem 'pg', '~> 0.20.0'
-gem 'activerecord', '~> 4.2.3', require: 'active_record'
+gem 'activerecord', '~> 5.1', '>= 5.1.3', require: 'active_record'
+gem 'arel', '~> 8.0'
 
 group :manual do
   gem 'sinatra', '~> 2.0'

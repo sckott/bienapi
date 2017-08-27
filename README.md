@@ -86,6 +86,7 @@ examples:
 ```
 curl 'http://129.114.111.129:8876/plot/metadata'
 curl 'http://129.114.111.129:8876/plot/protocols'
+curl 'http://129.114.111.129:8876/plot/name?plot=SR-1'
 ```
 
 ### `ranges` routes

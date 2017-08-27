@@ -2,6 +2,7 @@ require 'bundler/setup'
 %w(yaml json digest redis csv).each { |req| require req }
 Bundler.require(:default)
 require 'sinatra'
+require 'arel'
 require "sinatra/multi_route"
 require_relative 'funs'
 require_relative 'models/models'
@@ -229,6 +230,18 @@ class API < Sinatra::Application
     halt_method
     begin
       data = PlotName.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/plot/names/?' do
+    halt_method
+    begin
+      data = PlotName2.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
