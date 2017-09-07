@@ -49,6 +49,7 @@ class API < Sinatra::Application
     headers 'Content-Type' => 'application/json; charset=utf8'
     headers 'Access-Control-Allow-Methods' => 'HEAD, GET'
     headers 'Access-Control-Allow-Origin' => '*'
+    headers 'Strict-Transport-Security' => 'max-age=86400; includeSubDomains'
     cache_control :public, :must_revalidate, max_age: 60
 
     # prevent certain verbs
