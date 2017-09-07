@@ -226,29 +226,17 @@ class API < Sinatra::Application
   end
 
   ## Plot data by plot name
-  get '/plot/name/?' do
-    halt_method
-    begin
-      data = PlotName.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
-
-  get '/plot/names/?' do
-    halt_method
-    begin
-      data = PlotName2.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # get '/plot/name/?' do
+  #   halt_method
+  #   begin
+  #     data = PlotName.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
   # trait routes
   ## all traits
