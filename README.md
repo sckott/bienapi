@@ -38,10 +38,10 @@ Those checked off have been implemented:
 examples:
 
 ```
-curl 'http://bienapi.club/occurrence/species?species=Pinus%20contorta'
-curl 'http://bienapi.club/occurrence/genus?genus=Pinus'
-curl 'http://bienapi.club/occurrence/family?family=Pinaceae'
-curl -XPOST 'http://bienapi.club/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max:37.29; lon_min=-117.13; lon_max=-108.62"
+curl 'https://bienapi.club/occurrence/species?species=Pinus%20contorta'
+curl 'https://bienapi.club/occurrence/genus?genus=Pinus'
+curl 'https://bienapi.club/occurrence/family?family=Pinaceae'
+curl -XPOST 'https://bienapi.club/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max:37.29; lon_min=-117.13; lon_max=-108.62"
 ```
 
 
@@ -113,7 +113,7 @@ curl 'http://129.114.111.129:8876/plot/name?plot=SR-1'
 examples:
 
 ```
-curl 'http://129.114.111.129:8876/taxonomy/species?species=Cannabis%20sativa'
+curl 'https://bienapi.club/taxonomy/species?species=Cannabis%20sativa'
 ```
 
 ### `trait` routes
