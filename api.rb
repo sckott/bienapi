@@ -23,6 +23,8 @@ ActiveRecord::Base.establish_connection($config['db'])
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 class API < Sinatra::Application
+  set :protection, :except => [:json_csrf]
+
   configure do
     # Don't log them. We'll do that ourself
     set :dump_errors, true
