@@ -139,10 +139,17 @@ curl 'https://bienapi.club/ranges/genus?genus=Quercus'
 
 ### `stem` routes
 
-- [ ] `/stem/datasource/` Get stem data for a datasource
-- [ ] `/stem/family/` Get stem data for a family
-- [ ] `/stem/genus/` Get stem data for a genus
-- [ ] `/stem/species/` Get stem data for a species
+- [ ] `/stem/datasource/` Get stem data for a datasource (~ `BIEN::BIEN_stem_datasource`)
+- [ ] `/stem/family/` Get stem data for a family (~ `BIEN::BIEN_stem_family`)
+- [ ] `/stem/genus/` Get stem data for a genus (~ `BIEN::BIEN_stem_genus`)
+- [ ] `/stem/species/` Get stem data for a species (~ `BIEN::BIEN_stem_species`)
+
+examples:
+
+```
+curl 'https://bienapi.club/stem/species?species=Abies%20amabilis'
+curl 'https://bienapi.club/stem/species?species=Acer%20nigrum'
+```
 
 ### `taxonomy` routes
 
