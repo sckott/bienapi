@@ -1,5 +1,18 @@
 require_relative 'base'
 
+def check_limit_offset(params)
+  %i(limit offset).each do |p|
+    unless params[p].nil?
+      begin
+        params[p] = Integer(params[p])
+      rescue ArgumentError
+        raise Exception.new("#{p.to_s} is not an integer")
+      end
+    end
+  end
+  return params
+end
+
 module Models
   def self.models
     constants.select { |c| const_get(c).is_a?(Class) }
@@ -14,15 +27,7 @@ class List < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     select('species')
       .order('species')
@@ -36,15 +41,7 @@ class ListCountry < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     select('country, scrubbed_species_binomial').distinct
           .where(sprintf("country in ('%s')
@@ -62,15 +59,7 @@ class PlotMetadata < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     limit(params[:limit] || 10)
         .offset(params[:offset])
@@ -83,15 +72,7 @@ class PlotProtocols < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     select("sampling_protocol")
         .distinct()
@@ -105,15 +86,7 @@ end
 
 #   def self.endpoint(params)
 #     params.delete_if { |k, v| v.nil? || v.empty? }
-#     %i(limit offset).each do |p|
-#       unless params[p].nil?
-#         begin
-#           params[p] = Integer(params[p])
-#         rescue ArgumentError
-#           raise Exception.new("#{p.to_s} is not an integer")
-#         end
-#       end
-#     end
+#     params = check_limit_offset(params)
 #     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
 #     cols = %w(view_full_occurrence_individual.plot_name subplot view_full_occurrence_individual.elevation_m  view_full_occurrence_individual.plot_area_ha
 #       view_full_occurrence_individual.sampling_protocol view_full_occurrence_individual.recorded_by  view_full_occurrence_individual.scrubbed_species_binomial
@@ -146,15 +119,7 @@ class TaxonomySpecies < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     sel1 = %w(higher_plant_group "class" superorder "order" scrubbed_family scrubbed_genus
       scrubbed_species_binomial scrubbed_author scrubbed_taxonomic_status)
@@ -174,15 +139,7 @@ class Traits < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     select("trait_name")
         .distinct()
@@ -197,15 +154,7 @@ class TraitsFamily < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_family scrubbed_genus scrubbed_species_binomial trait_name trait_value unit method latitude longitude elevation url_source project_pi project_pi_contact access id)
     select(cols.join(', '))
@@ -221,15 +170,7 @@ class OccurrenceSpecies < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
     select(cols.join(', '))
@@ -255,15 +196,7 @@ class OccurrenceGenus < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_genus scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
     select(cols.join(', '))
@@ -279,15 +212,7 @@ class OccurrenceFamily < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_family scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
     select(cols.join(', '))
@@ -301,15 +226,7 @@ end
 class OccurrenceSpatial < ActiveRecord::Base
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     cols = %w(scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code a.datasource_id)
     select(cols.join(', '))
@@ -328,15 +245,7 @@ class Phylogeny < ActiveRecord::Base
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 100)') unless (params[:limit] || 1) <= 100
 
     type = params[:type] || "conservative"
@@ -368,15 +277,7 @@ class MetaPoliticalNames < ActiveRecord::Base
   self.table_name = 'county_parish'
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     select('country, countrycode AS "country.code", state_province, state_province_ascii,admin1code AS "state.code",
       county_parish,county_parish_ascii,admin2code AS "county.code"')
@@ -390,20 +291,12 @@ end
 ### list
 class RangesList < ActiveRecord::Base
   self.table_name = 'ranges'
+
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
+    params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    params.delete_if { |k, v| v.nil? || v.empty? }
-    select('spcies, gid')
+    select('species, gid')
       .order("species")
       .limit(params[:limit] || 10)
       .offset(params[:offset])
