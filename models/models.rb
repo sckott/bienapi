@@ -359,19 +359,9 @@ end
 class MetaVersion < ActiveRecord::Base
   self.table_name = 'bien_metadata'
   def self.endpoint
-    sel = %w(db_version db_release_date)
-    select(sel.join(', '))
-      .join("SELECT MAX(bien_metadata_id) as max_id FROM bien_metadata")
-      .as('b')
-      .on("bien_metadata.bien_metadata_id = b.max_id")
+    find_by_sql("SELECT db_version, db_release_date FROM bien_metadata a JOIN (SELECT MAX(bien_metadata_id) as max_id FROM bien_metadata) AS b ON a.bien_metadata_id=b.max_id;")
   end
 end
-
-# SELECT db_version, db_release_date
-#   FROM bien_metadata
-#   JOIN (
-#     SELECT MAX(bien_metadata_id)
-#     as max_id FROM bien_metadata) AS b ON bien_metadata.bien_metadata_id=b.max_id;
 
 ### political names
 class MetaPoliticalNames < ActiveRecord::Base
@@ -381,6 +371,3 @@ class MetaPoliticalNames < ActiveRecord::Base
       county_parish,county_parish_ascii,admin2code AS "county.code"')
   end
 end
-
-# SELECT country,countrycode AS "country.code", state_province, state_province_ascii,admin1code AS "state.code",
-#   county_parish,county_parish_ascii,admin2code AS "county.code" FROM county_parish;
