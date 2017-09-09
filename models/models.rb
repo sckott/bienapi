@@ -321,3 +321,34 @@ class OccurrenceSpatial < ActiveRecord::Base
         .offset(params[:offset])
   end
 end
+
+## phylogeny model
+class Phylogeny < ActiveRecord::Base
+  self.table_name = 'phylogeny'
+
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    %i(limit).each do |p|
+      unless params[p].nil?
+        begin
+          params[p] = Integer(params[p])
+        rescue ArgumentError
+          raise Exception.new("#{p.to_s} is not an integer")
+        end
+      end
+    end
+    raise Exception.new('limit too large (max 100)') unless (params[:limit] || 1) <= 100
+
+    if !["conservative", "complete"].include? params[:type]
+      raise Exception.new("'type' must be either conservative or complete")
+    end
+    if params[:type] == "conservative"
+      select('*')
+        .where("phylogeny_version = 'BIEN_2016_conservative'")
+    else
+      nums = [*1..100].sample(limit).join("', '")
+      select('*')
+        .where(sprintf("phylogeny_version = 'BIEN_2016_complete' AND replicate in ( '%s' )", nums))
+    end
+  end
+end
