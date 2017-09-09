@@ -392,19 +392,8 @@ class RangesSpecies < ActiveRecord::Base
   self.table_name = 'ranges'
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
-    %i(limit offset).each do |p|
-      unless params[p].nil?
-        begin
-          params[p] = Integer(params[p])
-        rescue ArgumentError
-          raise Exception.new("#{p.to_s} is not an integer")
-        end
-      end
-    end
-    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 100
     raise Exception.new('must pass "species" parameter') unless params[:species]
-    sp = [params[:species]]
-    sp = sp.map { |z| z.gsub(/\s/, '_') }
+    sp = [params[:species]].map { |z| z.gsub(/\s/, '_') }
     mn = params[:match_names_only] || false
     x1 = %w(ST_AsText(geom) species gid)
     x2 = %w(species)
@@ -412,7 +401,22 @@ class RangesSpecies < ActiveRecord::Base
     select(cols.join(', '))
       .where(sprintf("species in ( '%s' )", sp.join("', '")))
       .order("species")
-    # "SELECT ST_AsText(geom),species,gid FROM ranges WHERE species in ( '%s' ) ORDER BY species;"
-    # "SELECT species FROM ranges WHERE species in ( '%s' ) ORDER BY species;"
+  end
+end
+
+### genus
+class RangesGenus < ActiveRecord::Base
+  self.table_name = 'ranges'
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    raise Exception.new('must pass "genus" parameter') unless params[:genus]
+    ge = [params[:genus]].map { |z| sprintf('(%s_)', z) }
+    mn = params[:match_names_only] || false
+    x1 = %w(ST_AsText(geom) species gid)
+    x2 = %w(species)
+    cols = mn ? x2 : x1
+    select(cols.join(', '))
+      .where(sprintf("species ~ '%s'", ge.join('|')))
+      .order("species")
   end
 end
