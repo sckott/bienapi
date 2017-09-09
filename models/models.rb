@@ -339,6 +339,7 @@ class Phylogeny < ActiveRecord::Base
     end
     raise Exception.new('limit too large (max 100)') unless (params[:limit] || 1) <= 100
 
+    type = params[:type] || "conservative"
     if !["conservative", "complete"].include? params[:type]
       raise Exception.new("'type' must be either conservative or complete")
     end
