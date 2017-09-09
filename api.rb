@@ -365,12 +365,12 @@ class API < Sinatra::Application
   get '/meta/politicalnames/?' do
     begin
       halt_method
-      data = MetaPoliticalNames.endpoint
+      data = MetaPoliticalNames.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      ha = { data: data, error: nil }
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
-      halt 400, { data: nil, error: { message: e.message }}.to_json
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
   end
 
