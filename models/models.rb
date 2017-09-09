@@ -258,7 +258,7 @@ class OccurrenceCount < ActiveRecord::Base
         .offset(params[:offset])
     else
       select("scrubbed_species_binomial, count(*)")
-        .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND is_geovalid = 1", sp.join("', '")))
+        .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND is_geovalid = 1", [sp].join("', '")))
         .group(:scrubbed_species_binomial)
         .limit(params[:limit] || 10)
         .offset(params[:offset])

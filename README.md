@@ -33,17 +33,14 @@ Those checked off have been implemented:
 - [ ] `/occurrence/state/` Extract occurrence data for a state (~ `BIEN::BIEN_occurrence_state`)
 - [ ] `/occurrence/county/` Extract occurrence data for a county (~ `BIEN::BIEN_occurrence_county`)
 - [ ] `/occurrence/country/` Extract occurrence data for a country (~ `BIEN::BIEN_occurrence_country`)
-- [x] `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN (~ `BIEN::BIEN_occurrence_records_per_species`)
+- [ ] `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN (~ `BIEN::BIEN_occurrence_records_per_species`)
 
 examples:
-
-```
-curl 'https://bienapi.club/occurrence/count'
-```
 
 not working yet
 
 ```
+curl 'https://bienapi.club/occurrence/count'
 curl 'https://bienapi.club/occurrence/species?species=Pinus%20contorta'
 curl 'https://bienapi.club/occurrence/genus?genus=Pinus'
 curl 'https://bienapi.club/occurrence/family?family=Pinaceae'

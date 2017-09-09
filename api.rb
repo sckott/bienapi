@@ -159,7 +159,7 @@ class API < Sinatra::Application
     db_routes = Models.models.map do |m|
       "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
     end
-    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /traits/ /traits/family /phylogeny /meta/version /meta/politicalnames /ranges/list /ranges/species /ranges/genus /occurrence/count ) + db_routes }.to_json
+    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /traits/ /traits/family /phylogeny /meta/version /meta/politicalnames /ranges/list /ranges/species /ranges/genus ) + db_routes }.to_json
   end
 
   # generate routes from the models
@@ -322,17 +322,17 @@ class API < Sinatra::Application
   # end
 
   ## count
-  get '/occurrence/count/?' do
-    halt_method
-    begin
-      data = OccurrenceCount.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil ).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # get '/occurrence/count/?' do
+  #   halt_method
+  #   begin
+  #     data = OccurrenceCount.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil ).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
 
   # taxonomy routes
