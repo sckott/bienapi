@@ -340,10 +340,10 @@ class Phylogeny < ActiveRecord::Base
     raise Exception.new('limit too large (max 100)') unless (params[:limit] || 1) <= 100
 
     type = params[:type] || "conservative"
-    if !["conservative", "complete"].include? params[:type]
+    if !["conservative", "complete"].include? type
       raise Exception.new("'type' must be either conservative or complete")
     end
-    if params[:type] == "conservative"
+    if type == "conservative"
       select('*')
         .where("phylogeny_version = 'BIEN_2016_conservative'")
     else
