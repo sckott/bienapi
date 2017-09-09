@@ -349,6 +349,32 @@ class API < Sinatra::Application
     end
   end
 
+  # meta routes
+  get '/meta/version/?' do
+    begin
+      halt_method
+      data = MetaVersion.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/meta/politicalnames/?' do
+    begin
+      halt_method
+      data = MetaPoliticalNames.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+
   # prevent some routes
   route :copy, :patch, :put, :options, :trace, :delete, '/*' do
     halt 405

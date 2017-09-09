@@ -63,8 +63,16 @@ curl 'https://bienapi.club/list?country=Canada'
 
 ### `meta` routes
 
-- [ ] `/meta/version/` Get current BIEN database version and release date
-- [ ] `/meta/citations/` Get citations for BIEN data
+- [x] `/meta/version/` Get current BIEN database version and release date (~ `BIEN::BIEN_metadata_database_version`)
+- [ ] `/meta/citations/` Get citations for BIEN data (~ `BIEN::BIEN_metadata_citation`)
+- [x] `/meta/politicalnames/` Get political divisions and associated geonames codes (~ `BIEN::BIEN_metadata_list_political_names`)
+
+examples:
+
+```
+curl 'https://bienapi.club/meta/version'
+curl 'https://bienapi.club/meta/politicalnames'
+```
 
 ### `phylogeny` routes
 
@@ -73,7 +81,12 @@ curl 'https://bienapi.club/list?country=Canada'
 examples:
 
 ```
+# by default uses conservative tree
 curl 'https://bienapi.club/phylogeny'
+# same as
+curl 'https://bienapi.club/phylogeny?type=conservative'
+curl 'https://bienapi.club/phylogeny?type=complete'
+curl 'https://bienapi.club/phylogeny?type=complete&limit=10'
 ```
 
 ### `plot` routes
