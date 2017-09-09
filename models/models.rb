@@ -413,22 +413,3 @@ class StemSpecies < ActiveRecord::Base
   end
 end
 
-# SELECT analytical_stem.scrubbed_species_binomial, analytical_stem.latitude,
-#     analytical_stem.longitude,analytical_stem.date_collected,
-#     analytical_stem.relative_x_m, analytical_stem.relative_y_m,
-#     analytical_stem.taxonobservation_id,analytical_stem.stem_code,
-#     analytical_stem.stem_dbh_cm, analytical_stem.stem_height_m,
-#     plot_metadata.dataset,plot_metadata.datasource,plot_metadata.dataowner,
-#     analytical_stem.custodial_institution_codes,
-#     analytical_stem.collection_code,analytical_stem.datasource_id
-#   FROM
-#    (SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( 'Abies amabilis' )) AS analytical_stem
-#    JOIN plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)
-#    JOIN view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)
-#    WHERE analytical_stem.scrubbed_species_binomial in ( 'Abies amabilis' )
-#       AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
-#       AND analytical_stem.is_new_world = 1
-#       AND ( view_full_occurrence_individual.native_status IS NULL OR view_full_occurrence_individual.native_status NOT IN ( 'I', 'Ie' ) )
-#       AND analytical_stem.higher_plant_group IS NOT NULL
-#       AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)
-#    ORDER BY analytical_stem.scrubbed_species_binomial;
