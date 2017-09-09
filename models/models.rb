@@ -402,9 +402,17 @@ class RangesSpecies < ActiveRecord::Base
       end
     end
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 100
-    select("ST_AsText(geom), species, gid")
-      .where(sprintf("species in ( '%s' )", params[:species].join("', '")))
+    raise Exception.new('must pass "species" parameter') unless params[:species]
+    sp = [params[:species]]
+    sp = sp.map { |z| z.gsub(/\s/, '_') }
+    mn = params[:match_names_only] || false
+    x1 = %w(ST_AsText(geom) species gid)
+    x2 = %w(species)
+    cols = mn ? x2 : x1
+    select(cols.join(', '))
+      .where(sprintf("species in ( '%s' )", sp.join("', '")))
       .order("species")
-    #find_by_sql("SELECT ST_AsText(geom),species,gid FROM ranges WHERE species in ( '%s' ) ORDER BY species;")
+    # "SELECT ST_AsText(geom),species,gid FROM ranges WHERE species in ( '%s' ) ORDER BY species;"
+    # "SELECT species FROM ranges WHERE species in ( '%s' ) ORDER BY species;"
   end
 end
