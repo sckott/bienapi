@@ -393,17 +393,17 @@ class StemSpecies < ActiveRecord::Base
       analytical_stem.collection_code analytical_stem.datasource_id)
     sp = [params[:species]]
     select(sel.join(', '))
-        .from("(SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( '?' )) AS analytical_stem", sp.join("', '"))
+        .from(sprintf("(SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( '%s' )) AS analytical_stem", sp.join("', '")))
         .joins("plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)")
         .joins("view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)")
-        .where(
-          "analytical_stem.scrubbed_species_binomial in ( '?' )
+        .where(sprintf(
+          "analytical_stem.scrubbed_species_binomial in ( '%s' )
           AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
           AND analytical_stem.is_new_world = 1
           AND ( view_full_occurrence_individual.native_status IS NULL OR view_full_occurrence_individual.native_status NOT IN ( 'I', 'Ie' ) )
           AND analytical_stem.higher_plant_group IS NOT NULL
           AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)", sp.join("', '")
-        )
+        ))
         .order('analytical_stem.scrubbed_species_binomial')
         .limit(params[:limit] || 10)
         .offset(params[:offset])
