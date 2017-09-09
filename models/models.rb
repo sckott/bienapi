@@ -387,7 +387,7 @@ end
 
 
 ## range models
-### species
+### list
 class RangesList < ActiveRecord::Base
   self.table_name = 'ranges'
   def self.endpoint(params)

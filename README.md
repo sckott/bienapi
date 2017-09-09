@@ -120,6 +120,10 @@ curl 'https://bienapi.club/plot/name?plot=SR-1'
 examples:
 
 ```
+curl 'https://bienapi.club/ranges/list'
+curl 'https://bienapi.club/ranges/list?limit=3'
+curl 'https://bienapi.club/ranges/list?limit=3&offset=2'
+
 curl 'https://bienapi.club/ranges/species?species=Abies%20lasiocarpa'
 curl 'https://bienapi.club/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
 curl 'https://bienapi.club/ranges/species?species=Abies%20amabilis'
