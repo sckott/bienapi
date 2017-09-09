@@ -21,8 +21,14 @@ send Scott an email (scott@ropensci.org) about the API key if you want access
 
 Those checked off have been implemented:
 
+### root and info
+
 - [x] `/` base route - a pretty landing page with info
 - [x] `/heartbeat/` list all routes
+
+### authentication
+
+- [ ] `/token` - Get a API token (aka api key)
 
 ### `occurrence` routes
 
