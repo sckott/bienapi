@@ -393,9 +393,12 @@ class StemSpecies < ActiveRecord::Base
       analytical_stem.collection_code analytical_stem.datasource_id)
     sp = [params[:species]]
     select(sel.join(', '))
-        .from(sprintf("(SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( '%s' )) AS analytical_stem", sp.join("', '")))
-        .joins("plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)")
-        .joins("view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)")
+        .from(sprintf(
+          "(SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( '%s' )) AS analytical_stem
+          JOIN plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)
+          JOIN view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)",
+          sp.join("', '"))
+        )
         .where(sprintf(
           "analytical_stem.scrubbed_species_binomial in ( '%s' )
           AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
