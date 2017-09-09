@@ -114,8 +114,15 @@ curl 'https://bienapi.club/plot/name?plot=SR-1'
 - [ ] `/ranges/genus/` Get range maps for a genus
 - [ ] `/ranges/list/` List available range maps
 - [ ] `/ranges/spatial/` Get range maps that intersect a WKT polygon or bounding box
-- [ ] `/ranges/species/` Get range maps for a species
+- [x] `/ranges/species/` Get range maps for a species (~ `BIEN::BIEN_ranges_species`)
 - [ ] `/ranges/species/intersect/` Get range maps that intersect the range of a species
+
+examples:
+
+```
+curl 'https://bienapi.club/ranges/species?species=Abies%20lasiocarpa'
+curl 'https://bienapi.club/ranges/species?species=Abies%20amabilis'
+```
 
 ### `stem` routes
 

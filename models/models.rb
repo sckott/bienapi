@@ -384,3 +384,27 @@ class MetaPoliticalNames < ActiveRecord::Base
     .offset(params[:offset])
   end
 end
+
+
+## range models
+### species
+class RangesSpecies < ActiveRecord::Base
+  self.table_name = 'ranges'
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    %i(limit offset).each do |p|
+      unless params[p].nil?
+        begin
+          params[p] = Integer(params[p])
+        rescue ArgumentError
+          raise Exception.new("#{p.to_s} is not an integer")
+        end
+      end
+    end
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 100
+    select("ST_AsText(geom), species, gid")
+      .where(sprintf("species in ( '%s' )", params[:species].join("', '")))
+      .order("species")
+    #find_by_sql("SELECT ST_AsText(geom),species,gid FROM ranges WHERE species in ( '%s' ) ORDER BY species;")
+  end
+end
