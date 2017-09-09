@@ -248,19 +248,33 @@ class OccurrenceCount < ActiveRecord::Base
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    select("scrubbed_species_binomial,count(*)")
+    sp = params[:species] || nil
+    if sp.nil?
+      select("scrubbed_species_binomial, count(*)")
         .distinct
         .where("is_geovalid = 1 AND latitude IS NOT NULL AND LONGITUDE IS NOT NULL")
         .group(:scrubbed_species_binomial)
         .limit(params[:limit] || 10)
         .offset(params[:offset])
+    else
+      select("scrubbed_species_binomial, count(*)")
+        .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND is_geovalid = 1", sp.join("', '")))
+        .group(:scrubbed_species_binomial)
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+    end
   end
 end
 
+# SELECT scrubbed_species_binomial,count(*)
+#    FROM view_full_occurrence_individual
+#    WHERE scrubbed_species_binomial in ( 'Abies lasiocarpa' ) AND is_geovalid = 1
+#    GROUP BY scrubbed_species_binomial;
+
 # "SELECT DISTINCT scrubbed_species_binomial,count(*)
-# FROM view_full_occurrence_individual
-# WHERE is_geovalid = 1 AND latitude IS NOT NULL AND LONGITUDE IS NOT NULL
-# GROUP BY scrubbed_species_binomial;"
+#    FROM view_full_occurrence_individual
+#    WHERE is_geovalid = 1 AND latitude IS NOT NULL AND LONGITUDE IS NOT NULL
+#    GROUP BY scrubbed_species_binomial;"
 
 ## phylogeny model
 class Phylogeny < ActiveRecord::Base
