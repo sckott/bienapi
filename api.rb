@@ -34,7 +34,7 @@ class API < Sinatra::Application
 
     # Disable internal middleware for presenting errors
     # as useful HTML pages
-    set :show_exceptions, true
+    set :show_exceptions, false
   end
 
   before do
@@ -59,7 +59,7 @@ class API < Sinatra::Application
 
     # use redis caching
     if $config['caching'] && $use_redis
-      if request.path_info != "/"
+      if !["/", "/heartbeat"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -72,7 +72,7 @@ class API < Sinatra::Application
 
   before do
     pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
-    halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'])
+    halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'].slice(7..-1))
   end
 
   after do
