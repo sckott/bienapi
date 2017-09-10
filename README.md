@@ -193,7 +193,7 @@ examples:
 
 ```
 curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/traits/'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/traits/family/?family=Poaceae'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/traits/family?family=Poaceae'
 ```
 
 

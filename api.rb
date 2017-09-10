@@ -387,6 +387,8 @@ class API < Sinatra::Application
     end
   end
 
+
+
   # ranges routes
   get '/ranges/list/?' do
     begin
@@ -423,6 +425,8 @@ class API < Sinatra::Application
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
   end
+
+
 
   # stem routes
   get '/stem/species/?' do
