@@ -4,7 +4,10 @@ Bundler.require(:default)
 require 'sinatra'
 require 'arel'
 require "sinatra/multi_route"
+require 'jwt'
+
 require_relative 'funs'
+require_relative 'jwt_auth'
 require_relative 'models/models'
 
 # feature flag: toggle redis
@@ -23,6 +26,9 @@ ActiveRecord::Base.establish_connection($config['db'])
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 class API < Sinatra::Application
+
+  use JwtAuth
+
   set :protection, :except => [:json_csrf]
 
   configure do
@@ -145,6 +151,65 @@ class API < Sinatra::Application
   #     pass
   #   end
   # end
+
+  get '/login/?' do
+    @emails = [
+      'tomdelonge@gmail.com',
+      'markhoppus@yahoo.com',
+      'travisbarker@stuff.com'
+    ]
+
+    # steps to implement
+    # 1. if no email give 401
+    # 2. if email, check it's a properly formed email, if not give 401
+    # 3. if email found:
+    #   3a. if not expired, return already stored token
+    #   3b. if expired, return new token
+    # 4. if email not found, give new token
+    #
+    # should give back expiration date with token, in human readable date format
+
+    if @emails.include? params[:email]
+      content_type :json
+      { token: token(params[:email]) }.to_json
+    else
+      halt 401
+    end
+  end
+
+  def token(email)
+    JWT.encode payload(email), ENV['JWT_SECRET'], 'HS256'
+  end
+
+  def payload(email)
+    {
+      exp: Time.now.to_i + 60 * 60,
+      iat: Time.now.to_i,
+      iss: ENV['JWT_ISSUER'],
+      scopes: ['public'],
+      user: {
+        username: email
+      }
+    }
+  end
+
+  get '/money' do
+    @accounts = {
+      'tomdelonge@gmail.com': 10000,
+      'markhoppus@yahoo.com': 50000,
+      'travisbarker@stuff.com': 1000000000
+    }
+
+    scopes, email = request.env.values_at :scopes, :email
+    param_email = email['email'].to_sym
+
+    if scopes.include?('public') && @accounts.has_key?(param_email)
+      content_type :json
+      { money: @accounts[param_email] }.to_json
+    else
+      halt 403
+    end
+  end
 
   # default to landing page
   ## used to go to /heartbeat

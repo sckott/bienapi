@@ -5,6 +5,7 @@ gem 'redis', '~> 3.3', '>= 3.3.3'
 gem 'pg', '~> 0.20.0'
 gem 'activerecord', '~> 5.1', '>= 5.1.3', require: 'active_record'
 gem 'arel', '~> 8.0'
+gem 'jwt', '~> 2.0'
 
 group :manual do
   gem 'sinatra', '~> 2.0'
