@@ -8,7 +8,7 @@ require_relative 'funs'
 require_relative 'models/models'
 
 # feature flag: toggle redis
-$use_redis = false
+$use_redis = true
 
 # api key
 $api_key = ENV['BIEN_API_KEY']
