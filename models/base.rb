@@ -1,6 +1,7 @@
 class Base < ActiveRecord::Base
   self.abstract_class = true
   self.pluralize_table_names = false
+  self.req_field = nil
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
@@ -15,10 +16,10 @@ class Base < ActiveRecord::Base
       end
     end
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    fields = columns.map(&:name)
+    params[:fields].nil? ? self.req_field : self.req_field.concat(',') + params[:fields]
     limit(params[:limit] || 10)
         .offset(params[:offset])
-        .select(params[:fields])
+        .select()
   end
 end
 

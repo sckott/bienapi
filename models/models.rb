@@ -20,6 +20,7 @@ module Models
 
   class PlotMetadata < Base
     self.table_name = 'plot_metadata'
+    self.req_field = 'plot_metadata_id'
   end
 end
 
