@@ -167,19 +167,19 @@ class API < Sinatra::Application
   end
 
   # generate routes from the models
-  Models.models.each do |model_name|
-    model = Models.const_get(model_name)
-    get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
-      begin
-        data = model.endpoint(params)
-        raise Exception.new('no results found') if data.length.zero?
-        ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-        serve_data(ha, data)
-      rescue Exception => e
-        halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-      end
-    end
-  end
+  # Models.models.each do |model_name|
+  #   model = Models.const_get(model_name)
+  #   get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
+  #     begin
+  #       data = model.endpoint(params)
+  #       raise Exception.new('no results found') if data.length.zero?
+  #       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #       serve_data(ha, data)
+  #     rescue Exception => e
+  #       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #     end
+  #   end
+  # end
 
   get '/list/?' do
     halt_method

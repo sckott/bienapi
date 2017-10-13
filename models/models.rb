@@ -1,4 +1,4 @@
-require_relative 'base'
+# require_relative 'base'
 
 def check_limit_offset(params)
   %i(limit offset).each do |p|
@@ -13,16 +13,16 @@ def check_limit_offset(params)
   return params
 end
 
-module Models
-  def self.models
-    constants.select { |c| const_get(c).is_a?(Class) }
-  end
+# module Models
+#   def self.models
+#     constants.select { |c| const_get(c).is_a?(Class) }
+#   end
 
-  # class PlotMetadata < Base
-  #   self.table_name = 'plot_metadata'
-  #   self.req_field = 'plot_metadata_id'
-  # end
-end
+#   # class PlotMetadata < Base
+#   #   self.table_name = 'plot_metadata'
+#   #   self.req_field = 'plot_metadata_id'
+#   # end
+# end
 
 class List < ActiveRecord::Base
   self.table_name = 'bien_species_all'
