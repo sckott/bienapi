@@ -37,11 +37,28 @@ class API < Sinatra::Application
     set :show_exceptions, false
   end
 
+  # handle missed route
+  not_found do
+    halt 404, { error: 'route not found' }.to_json
+  end
+
+  # handle other errors
+  error do
+    halt 500, { error: 'server error' }.to_json
+  end
+
+  # method not allowed
+  error 405 do
+    halt 405, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'Method Not Allowed' })
+  end
+
   before do
     puts '[env]'
     p env
     puts '[Params]'
     p params
+    puts '[Authorization]'
+    #p request.env['HTTP_AUTHORIZATION'].slice(7..-1)
 
     $route = request.path
 
@@ -72,7 +89,9 @@ class API < Sinatra::Application
 
   before do
     pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
-    halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'].slice(7..-1))
+    halt 401, { error: 'not authorized' }.to_json unless !request.env['HTTP_AUTHORIZATION'].nil?
+    httpauth = request.env['HTTP_AUTHORIZATION'] || ""
+    halt 401, { error: 'not authorized' }.to_json unless valid_key?(httpauth.slice(7..-1))
   end
 
   after do
@@ -121,21 +140,6 @@ class API < Sinatra::Application
     mime_type :csv, 'text/csv'
   end
 
-  # handle missed route
-  not_found do
-    halt 404, { error: 'route not found' }.to_json
-  end
-
-  # handle other errors
-  error do
-    halt 500, { error: 'server error' }.to_json
-  end
-
-  # method not allowed
-  error 405 do
-    halt 405, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'Method Not Allowed' })
-  end
-
   # handler - redirects any /foo -> /foo/
   #  - if has any query params, passes to handler as before
   # get %r{(/.*[^\/])$} do
@@ -156,10 +160,10 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    db_routes = Models.models.map do |m|
-      "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
-    end
-    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /traits/ /traits/family /phylogeny /meta/version /meta/politicalnames /ranges/list /ranges/species /ranges/genus /stem/species ) + db_routes }.to_json
+    # db_routes = Models.models.map do |m|
+    #   "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
+    # end
+    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /traits/ /traits/family /phylogeny /meta/version /meta/politicalnames /ranges/list /ranges/species /ranges/genus /stem/species ) }.to_json
   end
 
   # generate routes from the models
@@ -206,7 +210,7 @@ class API < Sinatra::Application
   get '/plot/metadata/?' do
     halt_method
     begin
-      data = PlotMetadata.endpoint(params)
+      data = Models.const_get("PlotMetadata").endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)

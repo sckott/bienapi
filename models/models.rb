@@ -18,8 +18,9 @@ module Models
     constants.select { |c| const_get(c).is_a?(Class) }
   end
 
-  class Iucn < Base; end
-  class Usda < Base; end
+  class PlotMetadata < Base
+    self.table_name = 'plot_metadata'
+  end
 end
 
 class List < ActiveRecord::Base
@@ -54,18 +55,18 @@ class ListCountry < ActiveRecord::Base
   end
 end
 
-class PlotMetadata < ActiveRecord::Base
-  self.table_name = 'plot_metadata'
+# class PlotMetadata < ActiveRecord::Base
+#   self.table_name = 'plot_metadata'
 
-  def self.endpoint(params)
-    params.delete_if { |k, v| v.nil? || v.empty? }
-    params = check_limit_offset(params)
-    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    limit(params[:limit] || 10)
-        .offset(params[:offset])
-        .select(params[:fields])
-  end
-end
+#   def self.endpoint(params)
+#     params.delete_if { |k, v| v.nil? || v.empty? }
+#     params = check_limit_offset(params)
+#     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+#     limit(params[:limit] || 10)
+#         .offset(params[:offset])
+#         .select(params[:fields])
+#   end
+# end
 
 class PlotProtocols < ActiveRecord::Base
   self.table_name = 'plot_metadata'
