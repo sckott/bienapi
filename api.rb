@@ -210,7 +210,7 @@ class API < Sinatra::Application
   get '/plot/metadata/?' do
     halt_method
     begin
-      data = Models.const_get("PlotMetadata").endpoint(params)
+      data = PlotMetadata.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)

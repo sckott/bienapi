@@ -16,10 +16,10 @@ class Base < ActiveRecord::Base
       end
     end
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    params[:fields].nil? ? self.req_field : self.req_field.concat(',') + params[:fields]
+    fields = params[:fields].nil? ? self.req_field : self.req_field.concat(',') + params[:fields]
     limit(params[:limit] || 10)
         .offset(params[:offset])
-        .select()
+        .select(fields)
   end
 end
 
