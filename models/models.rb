@@ -382,7 +382,7 @@ class StemSpecies < ActiveRecord::Base
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    sel = %w(analytical_stem.scrubbed_species_binomial analytical_stem.latitude
+    sel = %w(analytical_stem.analytical_stem_id analytical_stem.scrubbed_species_binomial analytical_stem.latitude
       analytical_stem.longitude analytical_stem.date_collected analytical_stem.relative_x_m
       analytical_stem.relative_y_m analytical_stem.taxonobservation_id
       analytical_stem.stem_code analytical_stem.stem_dbh_cm
