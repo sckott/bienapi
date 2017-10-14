@@ -74,14 +74,8 @@ end
 class PlotProtocols < ActiveRecord::Base
   self.table_name = 'plot_metadata'
 
-  def self.endpoint(params)
-    params.delete_if { |k, v| v.nil? || v.empty? }
-    params = check_limit_offset(params)
-    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    select(:sampling_protocol)
-        .distinct()
-        .limit(params[:limit] || 10)
-        .offset(params[:offset])
+  def self.endpoint
+    select(:sampling_protocol).distinct()
   end
 end
 
