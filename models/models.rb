@@ -46,11 +46,11 @@ class ListCountry < ActiveRecord::Base
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     select('country, scrubbed_species_binomial').distinct
+          .order(:scrubbed_species_binomial)
           .where(sprintf("country in ('%s')
             AND scrubbed_species_binomial IS NOT NULL
             AND (is_cultivated = 0 OR is_cultivated IS NULL)
             AND is_new_world = 1", params[:country]))
-          .order('scrubbed_species_binomial')
           .limit(params[:limit] || 10)
           .offset(params[:offset])
   end
