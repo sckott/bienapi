@@ -78,7 +78,7 @@ class PlotProtocols < ActiveRecord::Base
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    select("sampling_protocol")
+    select(:plot_metadata_id, :sampling_protocol)
         .distinct()
         .limit(params[:limit] || 10)
         .offset(params[:offset])
