@@ -381,6 +381,7 @@ class RangesSpatial < ActiveRecord::Base
     params.delete_if { |k, v| v.nil? || v.empty? }
     raise Exception.new('must pass "wkt" parameter') unless params[:wkt]
 
+    wkt = params[:wkt]
     if params[:species_names_only] || false
       if params[:crop_ranges] || false
         sel = sprintf("ST_AsText(ST_intersection(geom,ST_GeographyFromText('SRID=4326;%s'))),species,gid", wkt)

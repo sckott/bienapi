@@ -151,6 +151,8 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/species?s
 
 curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/genus?genus=Abies'
 curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/genus?genus=Quercus'
+
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
 ```
 
 ### `stem` routes
