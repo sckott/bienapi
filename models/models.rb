@@ -501,7 +501,7 @@ class StemDataSource < ActiveRecord::Base
      analytical_stem.relative_y_m  analytical_stem.taxonobservation_id analytical_stem.stem_code  analytical_stem.stem_dbh_cm  
      analytical_stem.stem_height_m  plot_metadata.dataset plot_metadata.datasource plot_metadata.dataowner 
      analytical_stem.custodial_institution_codes  analytical_stem.collection_code analytical_stem.datasource_id)
-    ds = params[:family]
+    ds = params[:datasource]
     select(sel.join(', '))
         .from(sprintf(
           "(SELECT * FROM analytical_stem WHERE datasource in ( %s )) AS analytical_stem
