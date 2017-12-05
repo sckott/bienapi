@@ -65,7 +65,7 @@ curl -XPOST 'https://bienapi.club/occurrence/spatial' -d "wkt=POLYGON((-114.125 
 ### species `list` routes
 
 - [x] `/list/` Extract species list (~ `BIEN::BIEN_list_all`)
-- [x] `/list/county/` Extract species list by county (~ `BIEN::BIEN_list_country`)
+- [x] `/list/county/` Extract species list by county (~ `BIEN::BIEN_list_county`)
 - [ ] `/list/country/` Extract species list by country
 - [ ] `/list/state/` Extract a species list by state/province
 - [ ] `/list/spatial/` Extract a list of species within a given WKT
@@ -156,15 +156,23 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/genus?gen
 ### `stem` routes
 
 - [x] `/stem/species/` Get stem data for a species (~ `BIEN::BIEN_stem_species`)
-- [ ] `/stem/genus/` Get stem data for a genus (~ `BIEN::BIEN_stem_genus`)
-- [ ] `/stem/family/` Get stem data for a family (~ `BIEN::BIEN_stem_family`)
-- [ ] `/stem/datasource/` Get stem data for a datasource (~ `BIEN::BIEN_stem_datasource`)
+- [x] `/stem/genus/` Get stem data for a genus (~ `BIEN::BIEN_stem_genus`)
+- [x] `/stem/family/` Get stem data for a family (~ `BIEN::BIEN_stem_family`)
+- [x] `/stem/datasource/` Get stem data for a datasource (~ `BIEN::BIEN_stem_datasource`)
 
 examples:
 
 ```
 curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/species?species=Abies%20amabilis'
 curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/species?species=Lysimachia%20quadrifolia'
+
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/genus?genus=Lysimachia'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/genus?genus=Tovomita,Lysimachia'
+
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/family?family=Marantaceae'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/family?family=Marantaceae,Buxaceae'
+
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/datasource?datasource=SALVIAS'
 ```
 
 
@@ -174,6 +182,11 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/species?spe
 - [ ] `/taxonomy/genus/` Extract taxonomic information for genera
 - [ ] `/taxonomy/species/` Extract taxonomic information for species
 
+examples:
+
+```
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/taxonomy/species?species=Poa annua'
+```
 
 ### `trait` routes
 
@@ -199,15 +212,4 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/traits/family?fa
 
 ### other routes
 
-- [x] `/usda`
-- [x] `/iucn`
-
-examples:
-
-```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/usda'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/iucn'
-
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/usda?limit=3'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/usda?limit=3&offset=2'
-```
+...

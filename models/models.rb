@@ -389,21 +389,132 @@ class StemSpecies < ActiveRecord::Base
       analytical_stem.stem_height_m plot_metadata.dataset plot_metadata.datasource
       plot_metadata.dataowner analytical_stem.custodial_institution_codes
       analytical_stem.collection_code analytical_stem.datasource_id)
-    sp = [params[:species]]
+    sp = params[:species]
     select(sel.join(', '))
         .from(sprintf(
-          "(SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( '%s' )) AS analytical_stem
+          "(SELECT * FROM analytical_stem WHERE scrubbed_species_binomial in ( %s )) AS analytical_stem
           JOIN plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)
           JOIN view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)",
-          sp.join("', '"))
+          sp.split(',').map{ |z| "'#{z}'" }.join(', '))
         )
         .where(sprintf(
-          "analytical_stem.scrubbed_species_binomial in ( '%s' )
+          "analytical_stem.scrubbed_species_binomial in ( %s )
           AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
           AND analytical_stem.is_new_world = 1
           AND ( view_full_occurrence_individual.native_status IS NULL OR view_full_occurrence_individual.native_status NOT IN ( 'I', 'Ie' ) )
           AND analytical_stem.higher_plant_group IS NOT NULL
-          AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)", sp.join("', '")
+          AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)", sp.split(',').map{ |z| "'#{z}'" }.join(', ')
+        ))
+        .order('analytical_stem.scrubbed_species_binomial')
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+### genus
+class StemGenus < ActiveRecord::Base
+  self.table_name = 'analytical_stem'
+
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    params = check_limit_offset(params)
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    sel = %w(analytical_stem.scrubbed_genus analytical_stem.scrubbed_species_binomial analytical_stem.latitude
+      analytical_stem.longitude analytical_stem.date_collected analytical_stem.relative_x_m
+      analytical_stem.relative_y_m analytical_stem.taxonobservation_id
+      analytical_stem.stem_code analytical_stem.stem_dbh_cm
+      analytical_stem.stem_height_m plot_metadata.dataset plot_metadata.datasource
+      plot_metadata.dataowner analytical_stem.custodial_institution_codes
+      analytical_stem.collection_code analytical_stem.datasource_id)
+    gen = params[:genus]
+    select(sel.join(', '))
+        .from(sprintf(
+          "(SELECT * FROM analytical_stem WHERE scrubbed_genus in ( %s )) AS analytical_stem
+          JOIN plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)
+          JOIN view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)",
+          gen.split(',').map{ |z| "'#{z}'" }.join(', '))
+        )
+        .where(sprintf(
+          "analytical_stem.scrubbed_genus in ( %s )
+          AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
+          AND analytical_stem.is_new_world = 1
+          AND ( view_full_occurrence_individual.native_status IS NULL OR view_full_occurrence_individual.native_status NOT IN ( 'I', 'Ie' ) )
+          AND analytical_stem.higher_plant_group IS NOT NULL
+          AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)", gen.split(',').map{ |z| "'#{z}'" }.join(', ')
+        ))
+        .order('analytical_stem.scrubbed_genus,analytical_stem.scrubbed_species_binomial')
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+
+### family
+class StemFamily < ActiveRecord::Base
+  self.table_name = 'analytical_stem'
+
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    params = check_limit_offset(params)
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    sel = %w(analytical_stem.scrubbed_family analytical_stem.scrubbed_genus analytical_stem.scrubbed_species_binomial 
+      analytical_stem.latitude analytical_stem.longitude analytical_stem.date_collected analytical_stem.relative_x_m
+      analytical_stem.relative_y_m analytical_stem.taxonobservation_id
+      analytical_stem.stem_code analytical_stem.stem_dbh_cm
+      analytical_stem.stem_height_m plot_metadata.dataset plot_metadata.datasource
+      plot_metadata.dataowner analytical_stem.custodial_institution_codes
+      analytical_stem.collection_code analytical_stem.datasource_id)
+    fam = params[:family]
+    select(sel.join(', '))
+        .from(sprintf(
+          "(SELECT * FROM analytical_stem WHERE scrubbed_family in ( %s )) AS analytical_stem
+          JOIN plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)
+          JOIN view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)",
+          fam.split(',').map{ |z| "'#{z}'" }.join(', '))
+        )
+        .where(sprintf(
+          "analytical_stem.scrubbed_family in ( %s )
+          AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
+          AND analytical_stem.is_new_world = 1
+          AND ( view_full_occurrence_individual.native_status IS NULL OR view_full_occurrence_individual.native_status NOT IN ( 'I', 'Ie' ) )
+          AND analytical_stem.higher_plant_group IS NOT NULL
+          AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)", fam.split(',').map{ |z| "'#{z}'" }.join(', ')
+        ))
+        .order('analytical_stem.scrubbed_genus,analytical_stem.scrubbed_species_binomial')
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+
+### datasource
+class StemDataSource < ActiveRecord::Base
+  self.table_name = 'analytical_stem'
+
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    params = check_limit_offset(params)
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    sel = %w(analytical_stem.plot_name analytical_stem.subplot analytical_stem.elevation_m analytical_stem.plot_area_ha 
+     analytical_stem.sampling_protocol analytical_stem.recorded_by analytical_stem.scrubbed_species_binomial 
+     analytical_stem.latitude analytical_stem.longitude analytical_stem.date_collected analytical_stem.relative_x_m  
+     analytical_stem.relative_y_m  analytical_stem.taxonobservation_id analytical_stem.stem_code  analytical_stem.stem_dbh_cm  
+     analytical_stem.stem_height_m  plot_metadata.dataset plot_metadata.datasource plot_metadata.dataowner 
+     analytical_stem.custodial_institution_codes  analytical_stem.collection_code analytical_stem.datasource_id)
+    ds = params[:family]
+    select(sel.join(', '))
+        .from(sprintf(
+          "(SELECT * FROM analytical_stem WHERE datasource in ( %s )) AS analytical_stem
+          JOIN plot_metadata ON (analytical_stem.plot_metadata_id = plot_metadata.plot_metadata_id)
+          JOIN view_full_occurrence_individual ON (analytical_stem.taxonobservation_id  = view_full_occurrence_individual.taxonobservation_id)",
+          ds.split(',').map{ |z| "'#{z}'" }.join(', '))
+        )
+        .where(sprintf(
+          "analytical_stem.datasource in ( %s )
+          AND (analytical_stem.is_cultivated = 0 OR analytical_stem.is_cultivated IS NULL)
+          AND analytical_stem.is_new_world = 1
+          AND analytical_stem.higher_plant_group IS NOT NULL
+          AND (analytical_stem.is_geovalid = 1 OR analytical_stem.is_geovalid IS NULL)", ds.split(',').map{ |z| "'#{z}'" }.join(', ')
         ))
         .order('analytical_stem.scrubbed_species_binomial')
         .limit(params[:limit] || 10)
