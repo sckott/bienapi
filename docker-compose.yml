@@ -1,0 +1,20 @@
+redis:
+  image: redis
+  restart: always
+  volumes:
+    - $HOME/data/redis:/data
+  command:  redis-server --appendonly yes
+
+postgres:
+  image: postgres:9.5
+  volumes:
+    - /var/lib/postgresql/9.5/main:/var/lib/postgresql/data
+  environment:
+    - POSTGRES_PASSWORD="${BIEN_POSTGRES_PWD}"
+  restart: always
+
+api:
+  build: .
+  links:
+    - postgres
+    - redis
