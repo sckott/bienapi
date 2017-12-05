@@ -372,6 +372,32 @@ class RangesGenus < ActiveRecord::Base
   end
 end
 
+### spatial
+# @param crop.ranges Should the ranges be cropped to the focal area? Default is FALSE.
+# @param species.names.only Return species names rather than spatial data? Default is FALSE.
+class RangesSpatial < ActiveRecord::Base
+  self.table_name = 'ranges'
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    raise Exception.new('must pass "wkt" parameter') unless params[:wkt]
+
+    if params[:species_names_only] || false
+      if params[:crop_ranges] || false
+        sel = sprintf("ST_AsText(ST_intersection(geom,ST_GeographyFromText('SRID=4326;%s'))),species,gid", wkt)
+        select(sel)
+          .where(sprintf("st_intersects(ST_GeographyFromText('SRID=4326;%s'),geom)", wkt))
+      else
+        sel = %w(ST_AsText(geom) species gid)
+        select(sel.join(', '))
+          .where(sprintf("st_intersects(ST_GeographyFromText('SRID=4326; %s'), geom)", wkt))
+      end
+    else 
+      select(:species)
+        .where(sprintf("st_intersects(ST_GeographyFromText('SRID=4326;%s'),geom)", wkt))
+    end
+  end
+end
+
 
 ## stem models
 ### species

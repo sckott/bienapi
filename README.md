@@ -135,7 +135,7 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/plot/protocols?l
 - [x] `/ranges/species/` Get range maps for a species (~ `BIEN::BIEN_ranges_species`)
 - [x] `/ranges/genus/` Get range maps for a genus (~ `BIEN::BIEN_ranges_genus`)
 - [x] `/ranges/list/` List available range maps (~ `BIEN::BIEN_ranges_list`)
-- [ ] `/ranges/spatial/` Get range maps that intersect a WKT polygon or bounding box (~ `BIEN::BIEN_ranges_box` and `BIEN::BIEN_ranges_spatialpolygons`)
+- [x] `/ranges/spatial/` Get range maps that intersect a WKT polygon or bounding box (~ `BIEN::BIEN_ranges_box` and `BIEN::BIEN_ranges_spatialpolygons`)
 - [ ] `/ranges/species/intersect/` Get range maps that intersect the range of a species (~ `BIEN::BIEN_ranges_intersect_species`)
 
 examples:
