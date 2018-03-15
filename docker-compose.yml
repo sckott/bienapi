@@ -22,6 +22,8 @@ services:
 
   api:
     build: .
+    ports:
+      - "8876:8876"
     links:
       - postgres
       - redis
