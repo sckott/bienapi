@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_USER=bien
-      - POSTGRES_PASSWORD="${BIEN_POSTGRES_PWD}"
+      - POSTGRES_PASSWORD=${BIEN_POSTGRES_PWD}
       - POSTGRES_DB=public_vegbien
       - PG_DATA=/pgdata
     restart: always
