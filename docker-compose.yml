@@ -1,20 +1,31 @@
-redis:
-  image: redis
-  restart: always
-  volumes:
-    - $HOME/data/redis:/data
-  command:  redis-server --appendonly yes
+version: '2'
+services:
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - $HOME/data/redis:/data
+    command:  redis-server --appendonly yes
 
-postgres:
-  image: postgres:9.5
-  volumes:
-    - /var/lib/postgresql/9.5/main:/var/lib/postgresql/data
-  environment:
-    - POSTGRES_PASSWORD="${BIEN_POSTGRES_PWD}"
-  restart: always
+  postgres:
+    image: mdillon/postgis:10
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=bien
+      - POSTGRES_PASSWORD="${BIEN_POSTGRES_PWD}"
+      - POSTGRES_DB=public_vegbien
+      - PG_DATA=/pgdata
+    restart: always
+    volumes:
+      - db_volume:/pgdata
 
-api:
-  build: .
-  links:
-    - postgres
-    - redis
+  api:
+    build: .
+    links:
+      - postgres
+      - redis
+
+# create volumes if they don't exist already
+volumes: 
+  db_volume:
