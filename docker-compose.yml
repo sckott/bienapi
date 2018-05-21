@@ -8,7 +8,7 @@ services:
     command:  redis-server --appendonly yes
 
   postgres:
-    image: mdillon/postgis:10
+    image: mdillon/postgis
     ports:
       - "5432:5432"
     environment:
