@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   redis:
     image: redis
@@ -15,10 +15,14 @@ services:
       - POSTGRES_USER=bien
       - POSTGRES_PASSWORD=${BIEN_POSTGRES_PWD}
       - POSTGRES_DB=public_vegbien
-      - PG_DATA=/pgdata
     restart: always
     volumes:
-      - db_volume:/pgdata
+      - $HOME/data/bien:/var/lib/postgresql/
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
@@ -27,6 +31,13 @@ services:
     links:
       - postgres
       - redis
+    environment:
+      - BIEN_API_KEY=${BIEN_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
 # create volumes if they don't exist already
 volumes: 
