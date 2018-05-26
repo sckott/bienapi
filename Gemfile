@@ -1,5 +1,5 @@
 source "http://rubygems.org/"
-ruby "2.5.0"
+ruby "2.5.1"
 
 gem 'multi_json', '~> 1.13', '>= 1.13.1'
 gem 'redis', '~> 4.0', '>= 4.0.1'
@@ -10,7 +10,7 @@ gem 'arel', '~> 9.0'
 group :manual do
   gem 'sinatra', '~> 2.0', '>= 2.0.1'
   gem 'sinatra-contrib', '~> 2.0', '>= 2.0.1'
-  gem 'unicorn', '~> 5.4'
+  gem 'puma', '~> 3.11', '>= 3.11.4'
 end
 
 group :test do

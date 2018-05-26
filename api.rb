@@ -23,8 +23,6 @@ ActiveRecord::Base.establish_connection($config['db'])
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 class API < Sinatra::Application
-  set :protection, :except => [:json_csrf]
-
   configure do
     enable :logging, :dump_errors, :raise_errors
 
@@ -37,6 +35,9 @@ class API < Sinatra::Application
     # Disable internal middleware for presenting errors
     # as useful HTML pages
     set :show_exceptions, false
+
+    set :server, :puma
+    set :protection, :except => [:json_csrf]
   end
 
   # handle missed route
