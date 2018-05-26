@@ -12,7 +12,7 @@ Authorization: Bearer <api key>
 Or as a curl request:
 
 ```
-curl -H "Authorization: Bearer <api key>" https://bienapi.club
+curl -H "Authorization: Bearer <api key>" https://bienapi.xyz
 ```
 
 send Scott an email (scott@ropensci.org) about the API key if you want access
@@ -32,7 +32,7 @@ Those checked off have been implemented:
 examples
 
 ```
-curl 'https://bienapi.club/heartbeat'
+curl 'https://bienapi.xyz/heartbeat'
 ```
 
 ### authentication
@@ -53,11 +53,11 @@ curl 'https://bienapi.club/heartbeat'
 <details> <summary><strong>examples: not working yet</strong></summary>
 
 ```
-curl 'https://bienapi.club/occurrence/count'
-curl 'https://bienapi.club/occurrence/species?species=Pinus%20contorta'
-curl 'https://bienapi.club/occurrence/genus?genus=Pinus'
-curl 'https://bienapi.club/occurrence/family?family=Pinaceae'
-curl -XPOST 'https://bienapi.club/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max=37.29; lon_min=-117.13; lon_max=-108.62"
+curl 'https://bienapi.xyz/occurrence/count'
+curl 'https://bienapi.xyz/occurrence/species?species=Pinus%20contorta'
+curl 'https://bienapi.xyz/occurrence/genus?genus=Pinus'
+curl 'https://bienapi.xyz/occurrence/family?family=Pinaceae'
+curl -XPOST 'https://bienapi.xyz/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max=37.29; lon_min=-117.13; lon_max=-108.62"
 ```
 
 </details>
@@ -73,9 +73,9 @@ curl -XPOST 'https://bienapi.club/occurrence/spatial' -d "wkt=POLYGON((-114.125 
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/list/country?country=Canada'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/list?country=Canada'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/list?country=Canada&limit=4'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/list/country?country=Canada'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/list?country=Canada'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/list?country=Canada&limit=4'
 ```
 
 ### `meta` routes
@@ -87,8 +87,8 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/list?country=Can
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/meta/version'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/meta/politicalnames'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/meta/version'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/meta/politicalnames'
 ```
 
 ### `phylogeny` routes
@@ -99,15 +99,15 @@ examples:
 
 ```
 # by default uses conservative tree
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/phylogeny'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/phylogeny'
 # same as
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/phylogeny?type=conservative'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/phylogeny?type=conservative'
 
 # complete
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/phylogeny?type=complete'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/phylogeny?type=complete'
 
 # select certain number (default: 10)
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/phylogeny?type=complete&limit=4'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/phylogeny?type=complete&limit=4'
 ```
 
 ### `plot` routes
@@ -125,9 +125,9 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/phylogeny?type=c
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/plot/metadata'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/plot/protocols'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/plot/protocols?limit=3'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/plot/metadata'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/plot/protocols'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/plot/protocols?limit=3'
 ```
 
 ### `ranges` routes
@@ -141,18 +141,18 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/plot/protocols?l
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/list'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/list?limit=3'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/list?limit=3&offset=2'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/list'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/list?limit=3'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/list?limit=3&offset=2'
 
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/species?species=Abies%20lasiocarpa'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/species?species=Abies%20amabilis'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/species?species=Abies%20lasiocarpa'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/species?species=Abies%20amabilis'
 
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/genus?genus=Abies'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/genus?genus=Quercus'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/genus?genus=Abies'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/genus?genus=Quercus'
 
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
 ```
 
 ### `stem` routes
@@ -165,16 +165,16 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/ranges/spatial?w
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/species?species=Abies%20amabilis'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/species?species=Lysimachia%20quadrifolia'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/species?species=Abies%20amabilis'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/species?species=Lysimachia%20quadrifolia'
 
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/genus?genus=Lysimachia'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/genus?genus=Tovomita,Lysimachia'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/genus?genus=Lysimachia'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/genus?genus=Tovomita,Lysimachia'
 
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/family?family=Marantaceae'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/family?family=Marantaceae,Buxaceae'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/family?family=Marantaceae'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/family?family=Marantaceae,Buxaceae'
 
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/datasource?datasource=SALVIAS'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/stem/datasource?datasource=SALVIAS'
 ```
 
 
@@ -187,7 +187,7 @@ curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/stem/datasource?
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/taxonomy/species?species=Poa annua'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/taxonomy/species?species=Poa annua'
 ```
 
 ### `trait` routes
@@ -207,8 +207,8 @@ Note: `mean` removed since that's done client side.
 examples:
 
 ```
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/traits/'
-curl -H 'Authorization: Bearer <api key>' 'https://bienapi.club/traits/family?family=Poaceae'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/traits/'
+curl -H 'Authorization: Bearer <api key>' 'https://bienapi.xyz/traits/family?family=Poaceae'
 ```
 
 
