@@ -49,7 +49,7 @@ class ListCountry < ActiveRecord::Base
           .order(:scrubbed_species_binomial)
           .where(sprintf("country in ('%s')
             AND scrubbed_species_binomial IS NOT NULL
-            AND (is_cultivated = 0 OR is_cultivated IS NULL)
+            AND (is_cultivated_in_region = 0 OR is_cultivated_in_region IS NULL)
             AND is_new_world = 1", params[:country]))
           .limit(params[:limit] || 10)
           .offset(params[:offset])
@@ -314,8 +314,7 @@ class MetaPoliticalNames < ActiveRecord::Base
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    select('country, countrycode AS "country.code", state_province, state_province_ascii,admin1code AS "state.code",
-      county_parish,county_parish_ascii,admin2code AS "county.code"')
+    select('country, country_id AS "country.code", state_province, state_province_ascii, state_province_code AS "state.code"')
     .limit(params[:limit] || 10)
     .offset(params[:offset])
   end
