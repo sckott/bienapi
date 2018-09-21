@@ -234,7 +234,7 @@ class API < Sinatra::Application
   get '/plot/protocols/?' do
     halt_method
     begin
-      data = PlotProtocols.endpoint(params)
+      data = PlotProtocols.endpoint
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
@@ -242,6 +242,19 @@ class API < Sinatra::Application
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
   end
+
+  ## Get a sampling protocol by name
+  # get '/plot/protocols/{protocol}/?' do
+  #   halt_method
+  #   begin
+  #     data = PlotSamplingProtocol.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
   ## Plot data by plot name
   # get '/plot/name/?' do
@@ -352,17 +365,17 @@ class API < Sinatra::Application
 
   # taxonomy routes
   ## by species
-  # get '/taxonomy/species/?' do
-  #   begin
-  #     halt_method
-  #     data = TaxonomySpecies.endpoint(params)
-  #     raise Exception.new('no results found') if data.length.zero?
-  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-  #     serve_data(ha, data)
-  #   rescue Exception => e
-  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-  #   end
-  # end
+  get '/taxonomy/species/?' do
+    begin
+      halt_method
+      data = TaxonomySpecies.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
 
   # phylogeny route
   get '/phylogeny/?' do
