@@ -147,6 +147,14 @@ class TaxonomySpecies < ActiveRecord::Base
   end
 end
 
+# SELECT DISTINCT 
+#   higher_plant_group, "class", superorder, "order", scrubbed_family,
+#   scrubbed_genus,scrubbed_species_binomial,scrubbed_author,scrubbed_taxonomic_status  
+# FROM bien_taxonomy  
+# WHERE scrubbed_species_binomial in ( 'Acer nigrum' ) 
+# AND scrubbed_species_binomial IS NOT NULL  
+# ORDER BY higher_plant_group,scrubbed_family,scrubbed_genus,scrubbed_species_binomial,scrubbed_author
+
 class Traits < ActiveRecord::Base
   self.table_name = 'agg_traits'
 

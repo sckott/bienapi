@@ -24,7 +24,7 @@ ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 class API < Sinatra::Application
   configure do
-    enable :logging, :dump_errors, :raise_errors
+    enable :logging
 
     # Don't log them. We'll do that ourself
     set :dump_errors, true
@@ -34,7 +34,7 @@ class API < Sinatra::Application
 
     # Disable internal middleware for presenting errors
     # as useful HTML pages
-    set :show_exceptions, false
+    set :show_exceptions, true
 
     set :server, :puma
     set :protection, :except => [:json_csrf]
@@ -373,7 +373,7 @@ class API < Sinatra::Application
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.backtrace }}.to_json
     end
   end
 
