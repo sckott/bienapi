@@ -12,12 +12,12 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=bien
+      - POSTGRES_USER=scott
       - POSTGRES_PASSWORD=${BIEN_POSTGRES_PWD}
       - POSTGRES_DB=public_vegbien
     restart: always
     volumes:
-      - $HOME/data/bien:/var/lib/postgresql/
+      - $HOME/var/lib/postgresql/9.3/main:/var/lib/postgresql/
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s

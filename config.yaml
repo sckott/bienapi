@@ -4,8 +4,8 @@ caching:
 db:
   adapter: postgresql
   encoding: utf8
-  host: localhost
-  username: bien
+  host: postgres
+  username: scott
   password: replaceme
   port: 5432
   database: public_vegbien
