@@ -8,7 +8,7 @@ gem 'activerecord', '~> 5.2', require: 'active_record'
 gem 'arel', '~> 9.0'
 
 group :manual do
-  gem 'sinatra', '~> 2.0', '>= 2.0.5'
+  gem 'sinatra', '~> 2.0'
   gem 'sinatra-contrib', '~> 2.0', '>= 2.0.5'
   gem 'puma', '~> 3.12'
 end
