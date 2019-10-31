@@ -5,7 +5,7 @@ db:
   adapter: postgresql
   encoding: utf8
   host: postgres
-  username: scott
+  username: replaceme
   password: replaceme
   port: 5432
   database: public_vegbien

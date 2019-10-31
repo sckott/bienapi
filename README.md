@@ -65,8 +65,8 @@ curl -XPOST 'https://bienapi.xyz/occurrence/spatial' -d "wkt=POLYGON((-114.125 3
 ### species `list` routes
 
 - [x] `/list/` Extract species list (~ `BIEN::BIEN_list_all`)
-- [x] `/list/county/` Extract species list by county (~ `BIEN::BIEN_list_county`)
-- [ ] `/list/country/` Extract species list by country
+- [x] `/list/country/` Extract species list by country (~ `BIEN::BIEN_list_country`)
+- [ ] `/list/county/` Extract species list by county
 - [ ] `/list/state/` Extract a species list by state/province
 - [ ] `/list/spatial/` Extract a list of species within a given WKT
 

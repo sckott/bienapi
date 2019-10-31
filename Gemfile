@@ -1,16 +1,16 @@
 source "http://rubygems.org/"
-ruby "2.5.1"
+ruby "2.6.0"
 
 gem 'multi_json', '~> 1.13', '>= 1.13.1'
-gem 'redis', '~> 4.0', '>= 4.0.1'
-gem 'pg', '~> 1.0'
+gem 'redis', '~> 4.1'
+gem 'pg', '~> 1.1', '>= 1.1.4'
 gem 'activerecord', '~> 5.2', require: 'active_record'
 gem 'arel', '~> 9.0'
 
 group :manual do
-  gem 'sinatra', '~> 2.0', '>= 2.0.1'
-  gem 'sinatra-contrib', '~> 2.0', '>= 2.0.1'
-  gem 'puma', '~> 3.11', '>= 3.11.4'
+  gem 'sinatra', '~> 2.0', '>= 2.0.5'
+  gem 'sinatra-contrib', '~> 2.0', '>= 2.0.5'
+  gem 'puma', '~> 3.12'
 end
 
 group :test do

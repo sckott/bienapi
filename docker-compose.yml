@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=scott
+      - POSTGRES_USER=bien_api
       - POSTGRES_PASSWORD=${BIEN_POSTGRES_PWD}
       - POSTGRES_DB=public_vegbien
     restart: always
