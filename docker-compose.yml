@@ -1,44 +1,16 @@
-version: '2.1'
-services:
-  redis:
-    image: redis
-    restart: always
-    volumes:
-      - $HOME/data/redis:/data
-    command:  redis-server --appendonly yes
+redis:
+  image: redis
+  restart: always
+  volumes:
+    - $HOME/data/redis:/data
+  command:  redis-server --appendonly yes
 
-  postgres:
-    image: mdillon/postgis
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=bien_api
-      - POSTGRES_PASSWORD=${BIEN_POSTGRES_PWD}
-      - POSTGRES_DB=public_vegbien
-    restart: always
-    volumes:
-      - $HOME/var/lib/postgresql/9.3/main:/var/lib/postgresql/
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  api:
-    build: .
-    ports:
-      - "8876:8876"
-    links:
-      - postgres
-      - redis
-    environment:
-      - BIEN_API_KEY=${BIEN_API_KEY}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-
-# create volumes if they don't exist already
-volumes: 
-  db_volume:
+api:
+  build: .
+  ports:
+    - "8876:8876"
+  links:
+    - redis
+  restart: always
+  environment:
+    - BIEN_API_KEY=${BIEN_API_KEY}

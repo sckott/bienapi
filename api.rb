@@ -14,6 +14,7 @@ $use_redis = true
 $api_key = ENV['BIEN_API_KEY']
 
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
+$config = YAML::load_file(File.join(__dir__, 'config.yaml'))
 
 $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
@@ -172,7 +173,7 @@ class API < Sinatra::Application
       /traits /traits/family 
       /phylogeny 
       /meta/version /meta/politicalnames 
-      /ranges/list /ranges/species /ranges/genus 
+      /ranges/list /ranges/species /ranges/genus ranges/spatial
       /stem/species /stem/genus /stem/family /stem/datasource ) 
     }.to_json
   end
@@ -520,7 +521,7 @@ class API < Sinatra::Application
 
 
   # prevent some routes
-  route :copy, :patch, :put, :options, :trace, :delete, '/*' do
+  route :copy, :patch, :put, :post, :options, :trace, :delete, '/*' do
     halt 405
   end
 
