@@ -6,7 +6,7 @@ gem 'redis', '~> 4.1'
 gem 'pg', '~> 1.1', '>= 1.1.4'
 gem 'activerecord', '~> 5.2', require: 'active_record'
 gem 'arel', '~> 9.0'
-gem 'puma', '~> 4.3'
+gem 'puma', '~> 3.12'
 gem 'sinatra', '~> 2.0'
 gem 'sinatra-contrib', '~> 2.0', '>= 2.0.5'
 
