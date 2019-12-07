@@ -58,7 +58,7 @@ class API < Sinatra::Application
 
   # unsupported media type
   error 415 do
-    halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json and text/csv; no Content-type equals application/json' }.to_json
+    halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json, text/csv' }.to_json
   end
 
   before do
@@ -97,11 +97,11 @@ class API < Sinatra::Application
       ['application/json', 'text/csv'].include? ctype
     end
 
+    415 unless content_type_ok?
     pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
     halt 401, { error: 'not authorized' }.to_json unless !request.env['HTTP_AUTHORIZATION'].nil?
     httpauth = request.env['HTTP_AUTHORIZATION'] || ""
     halt 401, { error: 'not authorized' }.to_json unless valid_key?(httpauth.slice(7..-1))
-    415 unless content_type_ok?
   end
 
   after do
