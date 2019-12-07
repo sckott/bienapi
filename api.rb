@@ -73,14 +73,9 @@ class API < Sinatra::Application
     headers 'Strict-Transport-Security' => 'max-age=86400; includeSubDomains'
     cache_control :public, :must_revalidate, max_age: 60
 
-    # prevent certain verbs
-    # if request.request_method != 'GET'
-    #   halt 405
-    # end
-
     # use redis caching
     if $config['caching'] && $use_redis
-      if !["/", "/heartbeat", "/heart_beat"].include? request.path_info
+      if !["/", "/heartbeat"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -92,7 +87,7 @@ class API < Sinatra::Application
   end
 
   before do
-    pass if %w[/ /heartbeat /heartbeat/ /heart_beat /heart_beat/].include? request.path_info
+    pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
     halt 401, { error: 'not authorized' }.to_json unless !request.env['HTTP_AUTHORIZATION'].nil?
     httpauth = request.env['HTTP_AUTHORIZATION'] || ""
     halt 401, { error: 'not authorized' }.to_json unless valid_key?(httpauth.slice(7..-1))
