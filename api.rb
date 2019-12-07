@@ -80,7 +80,7 @@ class API < Sinatra::Application
 
     # use redis caching
     if $config['caching'] && $use_redis
-      if !["/", "/heartbeat"].include? request.path_info
+      if !["/", "/heartbeat", "/heart_beat"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -92,7 +92,7 @@ class API < Sinatra::Application
   end
 
   before do
-    pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
+    pass if %w[/ /heartbeat /heartbeat/ /heart_beat /heart_beat/].include? request.path_info
     halt 401, { error: 'not authorized' }.to_json unless !request.env['HTTP_AUTHORIZATION'].nil?
     httpauth = request.env['HTTP_AUTHORIZATION'] || ""
     halt 401, { error: 'not authorized' }.to_json unless valid_key?(httpauth.slice(7..-1))
@@ -164,18 +164,7 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    # db_routes = Models.models.map do |m|
-    #   "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
-    # end
-    { routes: %w( /heartbeat 
-      /list /list/country 
-      /plot/metadata /plot/protocols 
-      /traits /traits/family 
-      /phylogeny 
-      /meta/version /meta/politicalnames 
-      /ranges/list /ranges/species /ranges/genus ranges/spatial
-      /stem/species /stem/genus /stem/family /stem/datasource ) 
-    }.to_json
+    { routes: API.routes["GET"].map{ |w| w[0].to_s } }.to_json
   end
 
   # generate routes from the models
