@@ -11,12 +11,13 @@ require_relative 'jwt_auth'
 require_relative 'models/models'
 
 # feature flag: toggle redis
-$use_redis = false
+$use_redis = true
 
 # api key
 $api_key = ENV['BIEN_API_KEY']
 
 $config = YAML::load_file(File.join(__dir__, ENV['RACK_ENV'] == 'test' ? 'test_config.yaml' : 'config.yaml'))
+$config = YAML::load_file(File.join(__dir__, 'config.yaml'))
 
 $redis = Redis.new host: ENV.fetch('REDIS_PORT_6379_TCP_ADDR', 'localhost'),
                    port: ENV.fetch('REDIS_PORT_6379_TCP_PORT', 6379)
@@ -29,9 +30,9 @@ class API < Sinatra::Application
 
   use JwtAuth
 
-  set :protection, :except => [:json_csrf]
-
   configure do
+    enable :logging
+
     # Don't log them. We'll do that ourself
     set :dump_errors, true
 
@@ -41,6 +42,29 @@ class API < Sinatra::Application
     # Disable internal middleware for presenting errors
     # as useful HTML pages
     set :show_exceptions, true
+
+    set :server, :puma
+    set :protection, :except => [:json_csrf]
+  end
+
+  # handle missed route
+  not_found do
+    halt 404, { error: 'route not found' }.to_json
+  end
+
+  # handle other errors
+  error do
+    halt 500, { error: 'server error' }.to_json
+  end
+
+  # method not allowed
+  error 405 do
+    halt 405, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'Method Not Allowed' })
+  end
+
+  # unsupported media type
+  error 415 do
+    halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json, text/csv' }.to_json
   end
 
   before do
@@ -48,6 +72,8 @@ class API < Sinatra::Application
     p env
     puts '[Params]'
     p params
+    puts '[Authorization]'
+    #p request.env['HTTP_AUTHORIZATION'].slice(7..-1)
 
     $route = request.path
 
@@ -58,14 +84,9 @@ class API < Sinatra::Application
     headers 'Strict-Transport-Security' => 'max-age=86400; includeSubDomains'
     cache_control :public, :must_revalidate, max_age: 60
 
-    # prevent certain verbs
-    # if request.request_method != 'GET'
-    #   halt 405
-    # end
-
     # use redis caching
     if $config['caching'] && $use_redis
-      if request.path_info != "/"
+      if !["/", "/heartbeat"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -77,8 +98,16 @@ class API < Sinatra::Application
   end
 
   before do
+    def content_type_ok?
+      ctype = request.env['CONTENT_TYPE']
+      ['application/json', 'text/csv'].include? ctype
+    end
+
+    415 unless content_type_ok?
     pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
-    halt 401, { error: 'not authorized' }.to_json unless valid_key?(request.env['HTTP_AUTHORIZATION'])
+    # halt 401, { error: 'not authorized' }.to_json unless !request.env['HTTP_AUTHORIZATION'].nil?
+    # httpauth = request.env['HTTP_AUTHORIZATION'] || ""
+    # halt 401, { error: 'not authorized' }.to_json unless valid_key?(httpauth.slice(7..-1))
   end
 
   after do
@@ -110,7 +139,7 @@ class API < Sinatra::Application
       when nil
         ha.to_json
       else
-        halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json and text/csv; no Content-type equals application/json' }.to_json
+        415
       end
     end
 
@@ -125,21 +154,6 @@ class API < Sinatra::Application
   configure do
     mime_type :apidocs, 'text/html'
     mime_type :csv, 'text/csv'
-  end
-
-  # handle missed route
-  not_found do
-    halt 404, { error: 'route not found' }.to_json
-  end
-
-  # handle other errors
-  error do
-    halt 500, { error: 'server error' }.to_json
-  end
-
-  # method not allowed
-  error 405 do
-    halt 405, {'Content-Type' => 'application/json'}, JSON.generate({ 'error' => 'Method Not Allowed' })
   end
 
   # handler - redirects any /foo -> /foo/
@@ -221,26 +235,23 @@ class API < Sinatra::Application
 
   # route listing route
   get '/heartbeat/?' do
-    db_routes = Models.models.map do |m|
-      "/#{m.downcase}#{Models.const_get(m).primary_key ? '/:id' : '' }?<params>"
-    end
-    { routes: %w( /heartbeat /list /list/country /plot/metadata /plot/protocols /traits/ /traits/family /phylogeny /meta/version /meta/politicalnames /ranges/list /ranges/species /ranges/genus /stem/species ) + db_routes }.to_json
+    { routes: API.routes["GET"].map{ |w| w[0].to_s } }.to_json
   end
 
   # generate routes from the models
-  Models.models.each do |model_name|
-    model = Models.const_get(model_name)
-    get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
-      begin
-        data = model.endpoint(params)
-        raise Exception.new('no results found') if data.length.zero?
-        ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-        serve_data(ha, data)
-      rescue Exception => e
-        halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-      end
-    end
-  end
+  # Models.models.each do |model_name|
+  #   model = Models.const_get(model_name)
+  #   get "/#{model_name.to_s.downcase}/?#{model.primary_key ? ':id?/?' : '' }" do
+  #     begin
+  #       data = model.endpoint(params)
+  #       raise Exception.new('no results found') if data.length.zero?
+  #       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #       serve_data(ha, data)
+  #     rescue Exception => e
+  #       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #     end
+  #   end
+  # end
 
   get '/list/?' do
     halt_method
@@ -284,7 +295,7 @@ class API < Sinatra::Application
   get '/plot/protocols/?' do
     halt_method
     begin
-      data = PlotProtocols.endpoint(params)
+      data = PlotProtocols.endpoint
       raise Exception.new('no results found') if data.length.zero?
       ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
@@ -292,6 +303,19 @@ class API < Sinatra::Application
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
     end
   end
+
+  ## Get a sampling protocol by name
+  # get '/plot/protocols/{protocol}/?' do
+  #   halt_method
+  #   begin
+  #     data = PlotSamplingProtocol.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
   ## Plot data by plot name
   # get '/plot/name/?' do
@@ -402,17 +426,17 @@ class API < Sinatra::Application
 
   # taxonomy routes
   ## by species
-  # get '/taxonomy/species/?' do
-  #   begin
-  #     halt_method
-  #     data = TaxonomySpecies.endpoint(params)
-  #     raise Exception.new('no results found') if data.length.zero?
-  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-  #     serve_data(ha, data)
-  #   rescue Exception => e
-  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-  #   end
-  # end
+  get '/taxonomy/species/?' do
+    begin
+      halt_method
+      data = TaxonomySpecies.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.backtrace }}.to_json
+    end
+  end
 
   # phylogeny route
   get '/phylogeny/?' do
@@ -452,6 +476,8 @@ class API < Sinatra::Application
     end
   end
 
+
+
   # ranges routes
   get '/ranges/list/?' do
     begin
@@ -489,6 +515,20 @@ class API < Sinatra::Application
     end
   end
 
+  get '/ranges/spatial/?' do
+    begin
+      halt_method
+      data = RangesSpatial.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+
+
   # stem routes
   get '/stem/species/?' do
     begin
@@ -502,10 +542,46 @@ class API < Sinatra::Application
     end
   end
 
+  get '/stem/genus/?' do
+    begin
+      halt_method
+      data = StemGenus.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/stem/family/?' do
+    begin
+      halt_method
+      data = StemFamily.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/stem/datasource/?' do
+    begin
+      halt_method
+      data = StemDataSource.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
 
 
   # prevent some routes
-  route :copy, :patch, :put, :options, :trace, :delete, '/*' do
+  route :copy, :patch, :put, :post, :options, :trace, :delete, '/*' do
     halt 405
   end
 

@@ -1,0 +1,16 @@
+redis:
+  image: redis
+  restart: always
+  volumes:
+    - $HOME/data/redis:/data
+  command:  redis-server --appendonly yes
+
+api:
+  build: .
+  ports:
+    - "8876:8876"
+  links:
+    - redis
+  restart: always
+  environment:
+    - BIEN_API_KEY=${BIEN_API_KEY}
