@@ -1,7 +1,7 @@
 FROM ruby:2.6.5
 
-ENV JWT_SECRET='mysecret'
-ENV JWT_ISSUER='bienapi.xyz'
+RUN gem install pry \
+  && pry --version
 
 COPY . /opt/sinatra
 RUN cd /opt/sinatra \
