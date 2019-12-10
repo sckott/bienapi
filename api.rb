@@ -87,8 +87,8 @@ class API < Sinatra::Application
     cache_control :public, :must_revalidate, max_age: 60
 
     # use redis caching
-    if $config['caching'] && $use_redis
-      if !["/", "/heartbeat"].include? request.path_info
+    if $config['caching'] && $use_redis && authorized?
+      if !["/", "/heartbeat", "/heartbeat/", "/token", "/token/"].include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -97,9 +97,6 @@ class API < Sinatra::Application
       end
     end
 
-  end
-
-  before do
     def content_type_ok?
       ctype = request.env['CONTENT_TYPE']
       ['application/json', 'text/csv'].include? ctype
@@ -233,6 +230,8 @@ class API < Sinatra::Application
       content_type :json
       halt 403, { error: e.message }.to_json
     end
+
+    return true
   end
 
   get '/authorized/?' do
