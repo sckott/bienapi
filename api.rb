@@ -4,14 +4,27 @@ Bundler.require(:default)
 require 'sinatra'
 require 'arel'
 require "sinatra/multi_route"
-require 'jwt'
+require 'mongo'
 
 require_relative 'funs'
-require_relative 'jwt_auth'
 require_relative 'models/models'
 
 # feature flag: toggle redis
 $use_redis = true
+
+# mongo
+mongo_host = [ ENV.fetch('MONGO_PORT_27017_TCP_ADDR') + ":" + ENV.fetch('MONGO_PORT_27017_TCP_PORT') ]
+client_options = {
+  :database => 'bienusers',
+  :user => ENV.fetch('BIEN_MONGO_USER'),
+  :password => ENV.fetch('BIEN_MONGO_PWD'),
+  :max_pool_size => 25,
+  :connect_timeout => 15,
+  :wait_queue_timeout => 15
+}
+mongo = Mongo::Client.new(mongo_host, client_options)
+# mongo = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'bienusers')
+$busers = mongo[:users]
 
 # api key
 $api_key = ENV['BIEN_API_KEY']
@@ -27,22 +40,11 @@ ActiveRecord::Base.establish_connection($config['db'])
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 class API < Sinatra::Application
-
-  use JwtAuth
-
   configure do
     enable :logging
-
-    # Don't log them. We'll do that ourself
-    set :dump_errors, true
-
-    # Don't capture any errors. Throw them up the stack
-    set :raise_errors, true
-
-    # Disable internal middleware for presenting errors
-    # as useful HTML pages
-    set :show_exceptions, true
-
+    set :dump_errors, false
+    set :raise_errors, false
+    set :show_exceptions, false
     set :server, :puma
     set :protection, :except => [:json_csrf]
   end
@@ -166,63 +168,77 @@ class API < Sinatra::Application
   #   end
   # end
 
-  get '/login/?' do
-    @emails = [
-      'tomdelonge@gmail.com',
-      'markhoppus@yahoo.com',
-      'travisbarker@stuff.com'
-    ]
-
-    # steps to implement
-    # 1. if no email give 401
-    # 2. if email, check it's a properly formed email, if not give 401
-    # 3. if email found:
-    #   3a. if not expired, return already stored token
-    #   3b. if expired, return new token
-    # 4. if email not found, give new token
-    #
-    # should give back expiration date with token, in human readable date format
-
-    if @emails.include? params[:email]
-      content_type :json
-      { token: token(params[:email]) }.to_json
-    else
-      halt 401
+  def valid_email?(email)
+    raise Exception.new("an email must be given") unless not email.nil?
+    res = EmailAddress.error email
+    if not res.nil?
+      if res.empty?
+        res = "email string given doesn't appear to be an email address"
+      end
+      halt 403, { error: { message: res }}.to_json
     end
   end
 
-  def token(email)
-    JWT.encode payload(email), ENV['JWT_SECRET'], 'HS256'
-  end
-
-  def payload(email)
-    {
-      exp: Time.now.to_i + 60 * 60,
-      iat: Time.now.to_i,
-      iss: ENV['JWT_ISSUER'],
-      scopes: ['public'],
-      user: {
-        username: email
-      }
-    }
-  end
-
-  get '/money' do
-    @accounts = {
-      'tomdelonge@gmail.com': 10000,
-      'markhoppus@yahoo.com': 50000,
-      'travisbarker@stuff.com': 1000000000
-    }
-
-    scopes, email = request.env.values_at :scopes, :email
-    param_email = email['email'].to_sym
-
-    if scopes.include?('public') && @accounts.has_key?(param_email)
-      content_type :json
-      { money: @accounts[param_email] }.to_json
+  def token_make(email)
+    valid_email? email
+    tg = token_get(email)
+    if tg.nil?
+      # email not found, create token
+      tok = SecureRandom.urlsafe_base64.gsub(/[^0-9a-zA-Z]/i, '')
+      # on successful token creation, store in database
+      $busers.insert_one({ email: email, token: tok })
+      x = $busers.find({ email: params[:email] }).first
+      x.delete("_id")
+      return x
     else
-      halt 403
+      # email found, give back token
+      return tg
     end
+  end
+
+  def token_get(email)
+    valid_email? email
+    res = $busers.find({ email: params[:email] }).first
+    return res unless not res.nil?
+    res.delete("_id")
+    return res
+  end
+
+  get '/token/?' do
+    begin
+      tok = token_make(params[:email])
+      content_type :json
+      tok.to_json
+    rescue Exception => e
+      halt 400, { error: { message: e.message }}.to_json
+    end
+  end
+
+  def token_valid?(x)
+    if $busers.find({ token: x }).count != 1
+      raise Exception.new("token not found; get a token first with the /token route")
+    end
+  end
+
+  def authorized?
+    tok = env.fetch('HTTP_AUTHORIZATION', nil)
+    if tok.nil?
+      content_type :json
+      halt 401, { error: 'A token must be given in the Authorization header' }.to_json
+    end
+
+    begin
+      token_valid? tok
+    rescue Exception => e
+      content_type :json
+      halt 403, { error: e.message }.to_json
+    end
+  end
+
+  get '/authorized/?' do
+    authorized?
+    content_type :json
+    { authorized: true }.to_json
   end
 
   # default to landing page
@@ -254,6 +270,7 @@ class API < Sinatra::Application
   # end
 
   get '/list/?' do
+    authorized?
     halt_method
     begin
       data = List.endpoint(params)
@@ -266,6 +283,7 @@ class API < Sinatra::Application
   end
 
   get '/list/country/?' do
+    authorized?
     halt_method
     begin
       data = ListCountry.endpoint(params)
@@ -280,6 +298,7 @@ class API < Sinatra::Application
 
   # plot routes
   get '/plot/metadata/?' do
+    authorized?
     halt_method
     begin
       data = PlotMetadata.endpoint(params)
@@ -293,6 +312,7 @@ class API < Sinatra::Application
 
   ## List available sampling protocols
   get '/plot/protocols/?' do
+    authorized?
     halt_method
     begin
       data = PlotProtocols.endpoint
@@ -333,6 +353,7 @@ class API < Sinatra::Application
   # trait routes
   ## all traits
   get '/traits/?' do
+    authorized?
     halt_method
     begin
       data = Traits.endpoint(params)
@@ -346,6 +367,7 @@ class API < Sinatra::Application
 
   ## traits by family
   get '/traits/family/?' do
+    authorized?
     halt_method
     begin
       data = TraitsFamily.endpoint(params)
@@ -427,6 +449,7 @@ class API < Sinatra::Application
   # taxonomy routes
   ## by species
   get '/taxonomy/species/?' do
+    authorized?
     begin
       halt_method
       data = TaxonomySpecies.endpoint(params)
@@ -440,6 +463,7 @@ class API < Sinatra::Application
 
   # phylogeny route
   get '/phylogeny/?' do
+    authorized?
     begin
       halt_method
       data = Phylogeny.endpoint(params)
@@ -453,6 +477,7 @@ class API < Sinatra::Application
 
   # meta routes
   get '/meta/version/?' do
+    authorized?
     begin
       halt_method
       data = MetaVersion.endpoint
@@ -465,6 +490,7 @@ class API < Sinatra::Application
   end
 
   get '/meta/politicalnames/?' do
+    authorized?
     begin
       halt_method
       data = MetaPoliticalNames.endpoint(params)
@@ -480,6 +506,7 @@ class API < Sinatra::Application
 
   # ranges routes
   get '/ranges/list/?' do
+    authorized?
     begin
       halt_method
       data = RangesList.endpoint(params)
@@ -492,6 +519,7 @@ class API < Sinatra::Application
   end
 
   get '/ranges/species/?' do
+    authorized?
     begin
       halt_method
       data = RangesSpecies.endpoint(params)
@@ -504,6 +532,7 @@ class API < Sinatra::Application
   end
 
   get '/ranges/genus/?' do
+    authorized?
     begin
       halt_method
       data = RangesGenus.endpoint(params)
@@ -516,6 +545,7 @@ class API < Sinatra::Application
   end
 
   get '/ranges/spatial/?' do
+    authorized?
     begin
       halt_method
       data = RangesSpatial.endpoint(params)
@@ -531,6 +561,7 @@ class API < Sinatra::Application
 
   # stem routes
   get '/stem/species/?' do
+    authorized?
     begin
       halt_method
       data = StemSpecies.endpoint(params)
@@ -543,6 +574,7 @@ class API < Sinatra::Application
   end
 
   get '/stem/genus/?' do
+    authorized?
     begin
       halt_method
       data = StemGenus.endpoint(params)
@@ -555,6 +587,7 @@ class API < Sinatra::Application
   end
 
   get '/stem/family/?' do
+    authorized?
     begin
       halt_method
       data = StemFamily.endpoint(params)
@@ -567,6 +600,7 @@ class API < Sinatra::Application
   end
 
   get '/stem/datasource/?' do
+    authorized?
     begin
       halt_method
       data = StemDataSource.endpoint(params)
