@@ -69,6 +69,8 @@ class API < Sinatra::Application
     halt 415, { error: 'Unsupported media type', message: 'supported media types are application/json, text/csv' }.to_json
   end
 
+  paths_to_ignore = ["/", "/heartbeat", "/heartbeat/", "/token", "/token/"]
+
   before do
     puts '[env]'
     p env
@@ -88,7 +90,7 @@ class API < Sinatra::Application
 
     # use redis caching
     if $config['caching'] && $use_redis && authorized?
-      if !["/", "/heartbeat", "/heartbeat/", "/token", "/token/"].include? request.path_info
+      if !paths_to_ignore.include? request.path_info
         @cache_key = Digest::MD5.hexdigest(request.url)
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
@@ -218,6 +220,7 @@ class API < Sinatra::Application
   end
 
   def authorized?
+    return true if paths_to_ignore.include? request.path_info
     tok = env.fetch('HTTP_AUTHORIZATION', nil)
     if tok.nil?
       content_type :json
