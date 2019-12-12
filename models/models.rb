@@ -86,20 +86,20 @@ class PlotProtocols < ActiveRecord::Base
   end
 end
 
-# class PlotSamplingProtocol < ActiveRecord::Base
-#   self.table_name = 'plot_metadata'
-
-#   def self.endpoint(params)
-#     req_field = 'plot_metadata_id'
-#     params.delete_if { |k, v| v.nil? || v.empty? }
-#     params = check_limit_offset(params)
-#     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-#     fields = params[:fields].nil? ? req_field : req_field.concat(',') + params[:fields]
-#     limit(params[:limit] || 10)
-#         .offset(params[:offset])
-#         .select(fields)
-#   end
-# end
+class PlotSamplingProtocol < ActiveRecord::Base
+  self.table_name = 'plot_metadata'
+  def self.endpoint(params)
+    req_field = 'plot_metadata_id'
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    params = check_limit_offset(params)
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    fields = params[:fields].nil? ? req_field : req_field.concat(',') + params[:fields]
+    select(fields)
+      .where("sampling_protocol = ?", params[:protocol])
+      .limit(params[:limit] || 10)
+      .offset(params[:offset])
+  end
+end
 
 # class PlotName < ActiveRecord::Base
 #   self.table_name = 'view_full_occurrence_individual'
