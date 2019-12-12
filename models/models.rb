@@ -13,6 +13,17 @@ def check_limit_offset(params)
   return params
 end
 
+def is_bool(x)
+  [true, false].include? x
+end
+
+def check_type(x, name, type = "bool")
+  case type
+  when "bool"
+    raise Exception.new('%s must be of class bool' % name) unless is_bool(x)
+  end
+end
+
 # module Models
 #   def self.models
 #     constants.select { |c| const_get(c).is_a?(Class) }
@@ -86,16 +97,70 @@ class PlotProtocols < ActiveRecord::Base
   end
 end
 
+# class PlotSamplingProtocol < ActiveRecord::Base
+#   self.table_name = 'plot_metadata'
+#   def self.endpoint(params)
+#     req_field = 'plot_metadata_id'
+#     params.delete_if { |k, v| v.nil? || v.empty? }
+#     params = check_limit_offset(params)
+#     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+#     fields = params[:fields].nil? ? req_field : req_field.concat(',') + params[:fields]
+#     select(fields)
+#       .where("sampling_protocol = ?", params[:protocol])
+#       .limit(params[:limit] || 10)
+#       .offset(params[:offset])
+#   end
+# end
+
 class PlotSamplingProtocol < ActiveRecord::Base
   self.table_name = 'plot_metadata'
   def self.endpoint(params)
-    req_field = 'plot_metadata_id'
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    fields = params[:fields].nil? ? req_field : req_field.concat(',') + params[:fields]
-    select(fields)
-      .where("sampling_protocol = ?", params[:protocol])
+
+    sel = %w(view_full_occurrence_individual.plot_name subplot view_full_occurrence_individual.elevation_m view_full_occurrence_individual.plot_area_ha 
+      view_full_occurrence_individual.sampling_protocol recorded_by scrubbed_species_binomial individual_count)
+
+    fields_tax = %w(view_full_occurrence_individual.verbatim_family view_full_occurrence_individual.verbatim_scientific_name view_full_occurrence_individual.family_matched view_full_occurrence_individual.name_matched view_full_occurrence_individual.name_matched_author view_full_occurrence_individual.higher_plant_group view_full_occurrence_individual.scrubbed_taxonomic_status view_full_occurrence_individual.scrubbed_family view_full_occurrence_individual.scrubbed_author)
+    # tax = params[:all_taxonomy].nil? ? nil : fields_tax
+
+    fields_nat = %w(view_full_occurrence_individual.native_status view_full_occurrence_individual.native_status_reason view_full_occurrence_individual.native_status_sources view_full_occurrence_individual.is_introduced view_full_occurrence_individual.native_status_country view_full_occurrence_individual.native_status_state_province view_full_occurrence_individual.native_status_county_parish)
+    native_status = params[:native_status].nil? ? false : params[:native_status]
+    check_type(native_status, "native_status")
+    nat_query = native_status ? "AND (view_full_occurrence_individual.is_introduced=0 OR view_full_occurrence_individual.is_introduced IS NULL) " : ""
+
+    fields_pol = %w(view_full_occurrence_individual.country view_full_occurrence_individual.state_province view_full_occurrence_individual.county view_full_occurrence_individual.locality)
+    # pol = params[:political_boundaries].nil? ? nil : fields_pol
+
+    fields_coll = %w(view_full_occurrence_individual.catalog_number view_full_occurrence_individual.recorded_by view_full_occurrence_individual.record_number view_full_occurrence_individual.date_collected view_full_occurrence_individual.identified_by view_full_occurrence_individual.date_identified view_full_occurrence_individual.identification_remarks)
+    # coll = params[:collection_info].nil? ? nil : fields_coll
+
+    cultivated = params[:cultivated].nil? ? false : params[:cultivated]
+    check_type(cultivated, "cultivated")
+    cult_query = cultivated ? "" : "AND (view_full_occurrence_individual.is_cultivated_observation = 0 OR view_full_occurrence_individual.is_cultivated_observation IS NULL) AND view_full_occurrence_individual.is_location_cultivated IS NULL"
+    
+    nw = params[:only_new_world].nil? ? false : params[:only_new_world]
+    check_type(nw, "only_new_world")
+    nw_query = nw ? "AND view_full_occurrence_individual.is_new_world = 1 " : ""
+    # met_query = params[:all_metadata] ? nil : ""
+
+    prots = params[:protocol]
+    select(sel + fields_tax + fields_nat + fields_pol + fields_coll)
+      .from(sprintf(
+        "(SELECT * FROM view_full_occurrence_individual WHERE view_full_occurrence_individual.sampling_protocol in ( %s ))
+        %s
+        AND view_full_occurrence_individual.higher_plant_group NOT IN ('Algae','Bacteria','Fungi') 
+        AND (view_full_occurrence_individual.is_geovalid = 1 ) 
+        AND (view_full_occurrence_individual.georef_protocol is NULL OR view_full_occurrence_individual.georef_protocol<>'county centroid') 
+        AND (view_full_occurrence_individual.is_centroid IS NULL OR view_full_occurrence_individual.is_centroid=0) 
+        AND view_full_occurrence_individual.observation_type='plot' 
+        AND view_full_occurrence_individual.scrubbed_species_binomial IS NOT NULL",
+        prots.split(',').map{ |z| "'#{z}'" }.join(', '), [cult_query, nat_query, nw_query].join(" "))
+      )
+      .order('view_full_occurrence_individual.country, view_full_occurrence_individual.plot_name, view_full_occurrence_individual.subplot,
+        view_full_occurrence_individual.scrubbed_species_binomial) as view_full_occurrence_individual')
+      .joins("plot_metadata ON (view_full_occurrence_individual.plot_metadata_id=plot_metadata.plot_metadata_id)")
       .limit(params[:limit] || 10)
       .offset(params[:offset])
   end
