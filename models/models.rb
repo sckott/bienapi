@@ -148,7 +148,7 @@ class PlotSamplingProtocol < ActiveRecord::Base
     prots = params[:protocol]
     select(sel + fields_tax + fields_nat + fields_pol + fields_coll)
       .from(sprintf(
-        "(SELECT * FROM view_full_occurrence_individual WHERE view_full_occurrence_individual.sampling_protocol in ( %s ))
+        "(SELECT * FROM view_full_occurrence_individual WHERE view_full_occurrence_individual.sampling_protocol in ( %s )
         %s
         AND view_full_occurrence_individual.higher_plant_group NOT IN ('Algae','Bacteria','Fungi') 
         AND (view_full_occurrence_individual.is_geovalid = 1 ) 
