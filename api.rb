@@ -2,7 +2,6 @@ require 'bundler/setup'
 %w(yaml json digest redis csv).each { |req| require req }
 Bundler.require(:default)
 require 'sinatra'
-require 'arel'
 require "sinatra/multi_route"
 require 'mongo'
 
@@ -327,18 +326,18 @@ class API < Sinatra::Application
   end
 
   ## Get a sampling protocol by name
-  get '/plot/protocols/:protocol/?' do
-    authorized?
-    halt_method
-    begin
-      data = PlotSamplingProtocol.endpoint(params)
-      raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
-      serve_data(ha, data)
-    rescue Exception => e
-      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
-    end
-  end
+  # get '/plot/protocols/:protocol/?' do
+  #   authorized?
+  #   halt_method
+  #   begin
+  #     data = PlotSamplingProtocol.endpoint(params)
+  #     raise Exception.new('no results found') if data.length.zero?
+  #     ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+  #     serve_data(ha, data)
+  #   rescue Exception => e
+  #     halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+  #   end
+  # end
 
   ## Plot data by plot name
   # get '/plot/name/?' do
