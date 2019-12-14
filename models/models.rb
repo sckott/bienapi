@@ -158,9 +158,9 @@ class PlotSamplingProtocol < ActiveRecord::Base
         AND view_full_occurrence_individual.scrubbed_species_binomial IS NOT NULL",
         prots.split(',').map{ |z| "'#{z}'" }.join(', '), [cult_query, nat_query, nw_query].join(" "))
       )
-      .joins("JOIN plot_metadata ON (view_full_occurrence_individual.plot_metadata_id=plot_metadata.plot_metadata_id)")
       .order('view_full_occurrence_individual.country, view_full_occurrence_individual.plot_name, view_full_occurrence_individual.subplot,
           view_full_occurrence_individual.scrubbed_species_binomial) as view_full_occurrence_individual')
+      .joins("JOIN plot_metadata ON (view_full_occurrence_individual.plot_metadata_id=plot_metadata.plot_metadata_id)")
       .limit(params[:limit] || 10)
       .offset(params[:offset])
   end
