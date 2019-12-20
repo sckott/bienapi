@@ -384,6 +384,7 @@ class API < Sinatra::Application
   # occurrence routes
   ## species
   get '/occurrence/species/?' do
+    authorized?
     halt_method
     begin
       data = OccurrenceSpecies.endpoint(params)
@@ -397,6 +398,7 @@ class API < Sinatra::Application
 
   ## genus
   get '/occurrence/genus/?' do
+    authorized?
     halt_method
     begin
       data = OccurrenceGenus.endpoint(params)
@@ -410,6 +412,7 @@ class API < Sinatra::Application
 
   ## family
   get '/occurrence/family/?' do
+    authorized?
     halt_method
     begin
       data = OccurrenceFamily.endpoint(params)
@@ -423,6 +426,7 @@ class API < Sinatra::Application
 
   ## family
   post '/occurrence/spatial/?' do
+    authorized?
     halt_method(['POST'])
     begin
       data = OccurrenceSpatial.endpoint(params)
@@ -436,6 +440,7 @@ class API < Sinatra::Application
 
   # count
   get '/occurrence/count/?' do
+    authorized?
     halt_method
     begin
       data = OccurrenceCount.endpoint(params)
