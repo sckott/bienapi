@@ -1,3 +1,18 @@
+mongo:
+  image: aashreys/mongo-auth
+  volumes:
+    - $HOME/data/mongodb:/data/db
+  restart: always
+  ports:
+    - "27017:27017"
+  environment:
+    AUTH: "yes"
+    MONGODB_ADMIN_USER: ${BIEN_MONGO_USER}
+    MONGODB_ADMIN_PASS: ${BIEN_MONGO_PWD}
+    MONGODB_APPLICATION_DATABASE: bienusers
+    MONGODB_APPLICATION_USER: ${BIEN_MONGO_USER}
+    MONGODB_APPLICATION_PASS: ${BIEN_MONGO_PWD}
+
 redis:
   image: redis
   restart: always
@@ -10,7 +25,10 @@ api:
   ports:
     - "8876:8876"
   links:
+    - mongo
     - redis
   restart: always
   environment:
-    - BIEN_API_KEY=${BIEN_API_KEY}
+    BIEN_API_KEY: ${BIEN_API_KEY}
+    BIEN_MONGO_USER: ${BIEN_MONGO_USER}
+    BIEN_MONGO_PWD: ${BIEN_MONGO_PWD}

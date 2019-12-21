@@ -1,5 +1,8 @@
 FROM ruby:2.6.5
 
+RUN gem install pry \
+  && pry --version
+
 COPY . /opt/sinatra
 RUN cd /opt/sinatra \
   && bundle install
