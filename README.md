@@ -3,21 +3,21 @@ BIEN API
 
 ## Authentication
 
-An API key is required for most routes. Keys (aka tokens) are passed in a header like:
+An API token is required for most routes. Tokens are passed in a header like:
 
 ```
-Authorization: <api key>
+Authorization: token
 ```
 
 Or as a curl request:
 
 ```
-curl -H "Authorization: <api key>" https://bienapidev.xyz
+curl -H "Authorization: token" https://bienapidev.xyz
 ```
 
-Where you see `<api key>` below in examples, put in the API key (not in `<>`, but replacing it)
+Where you see `token` below in examples, put in your token
 
-Get an API key using the `/token` route, see below
+Get a token using the `/token` route, see below
 
 ## API Routes
 
@@ -36,7 +36,7 @@ curl 'https://bienapidev.xyz/heartbeat'
 
 ### authentication
 
-- [x] `/token` - Get a API token (AKA key)
+- [x] `/token` - Get an API token
 
 ```
 curl 'https://bienapidev.xyz/token?email=jane.doe@gmail.com'
@@ -80,9 +80,9 @@ curl -XPOST 'https://bienapidev.xyz/occurrence/spatial' -d "wkt=POLYGON((-114.12
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list/country?country=Canada'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list?country=Canada'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list?country=Canada&limit=4'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/list/country?country=Canada'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/list?country=Canada'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/list?country=Canada&limit=4'
 ```
 
 ### `meta` routes
@@ -94,8 +94,8 @@ curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list?country=Canada&l
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/meta/version'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/meta/politicalnames'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/meta/version'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/meta/politicalnames'
 ```
 
 ### `phylogeny` routes
@@ -106,15 +106,15 @@ examples:
 
 ```
 # by default uses conservative tree
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/phylogeny'
 # same as
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=conservative'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/phylogeny?type=conservative'
 
 # complete
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=complete'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/phylogeny?type=complete'
 
 # select certain number (default: 10)
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=complete&limit=4'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/phylogeny?type=complete&limit=4'
 ```
 
 ### `plot` routes
@@ -132,9 +132,9 @@ curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=comple
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/metadata'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/protocols'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/protocols?limit=3'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/plot/metadata'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/plot/protocols'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/plot/protocols?limit=3'
 ```
 
 ### `ranges` routes
@@ -148,18 +148,18 @@ curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/protocols?limit=
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/list'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/list?limit=3'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/list?limit=3&offset=2'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/list'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/list?limit=3'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/list?limit=3&offset=2'
 
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/species?species=Abies%20lasiocarpa'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/species?species=Abies%20amabilis'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/species?species=Abies%20lasiocarpa'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/species?species=Abies%20amabilis'
 
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/genus?genus=Abies'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/genus?genus=Quercus'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/genus?genus=Abies'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/genus?genus=Quercus'
 
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
 ```
 
 ### `stem` routes
@@ -172,16 +172,16 @@ curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/spatial?wkt=PO
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/species?species=Abies%20amabilis'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/species?species=Lysimachia%20quadrifolia'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/species?species=Abies%20amabilis'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/species?species=Lysimachia%20quadrifolia'
 
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/genus?genus=Lysimachia'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/genus?genus=Tovomita,Lysimachia'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/genus?genus=Lysimachia'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/genus?genus=Tovomita,Lysimachia'
 
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/family?family=Marantaceae'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/family?family=Marantaceae,Buxaceae'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/family?family=Marantaceae'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/family?family=Marantaceae,Buxaceae'
 
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/datasource?datasource=SALVIAS'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/stem/datasource?datasource=SALVIAS'
 ```
 
 
@@ -194,7 +194,7 @@ curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/datasource?datas
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/taxonomy/species?species=Poa annua'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/taxonomy/species?species=Poa annua'
 ```
 
 ### `trait` routes
@@ -214,8 +214,8 @@ Note: `mean` removed since that's done client side.
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/traits/'
-curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/traits/family?family=Poaceae'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/traits/'
+curl -H 'Authorization: token' 'https://bienapidev.xyz/traits/family?family=Poaceae'
 ```
 
 
