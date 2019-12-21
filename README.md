@@ -6,19 +6,18 @@ BIEN API
 An API key is required for most routes. Keys (aka tokens) are passed in a header like:
 
 ```
-Authorization: Bearer <api key>
+Authorization: <api key>
 ```
 
 Or as a curl request:
 
 ```
-curl -H "Authorization: Bearer <api key>" https://bienapi.xyz
+curl -H "Authorization: <api key>" https://bienapidev.xyz
 ```
 
-send Scott an email (scott@ropensci.org) about the API key if you want access
+Where you see `<api key>` below in examples, put in the API key (not in `<>`, but replacing it)
 
-Where you see `<api key>` below in examples, put in the API key (not in `<>` though)
-
+Get an API key using the `/token` route, see below
 
 ## API Routes
 
@@ -32,12 +31,18 @@ Those checked off have been implemented:
 examples
 
 ```
-curl 'https://bienapi.xyz/heartbeat'
+curl 'https://bienapidev.xyz/heartbeat'
 ```
 
 ### authentication
 
-- [ ] `/token` - Get a API token (aka api key)
+- [x] `/token` - Get a API token (AKA key)
+
+```
+curl 'https://bienapidev.xyz/token?email=jane.doe@gmail.com'
+```
+
+and you'll get back a token. 
 
 ### `occurrence` routes
 
@@ -50,14 +55,16 @@ curl 'https://bienapi.xyz/heartbeat'
 - [ ] `/occurrence/country/` Extract occurrence data for a country (~ `BIEN::BIEN_occurrence_country`)
 - [ ] `/occurrence/count/` Count the number of (geoValid) occurrence records for each species in BIEN (~ `BIEN::BIEN_occurrence_records_per_species`)
 
+Some of these routes are in the API (you'll see them in `/heartbeat`, but they don't work yet)
+
 <details> <summary><strong>examples: not working yet</strong></summary>
 
 ```
-curl 'https://bienapi.xyz/occurrence/count'
-curl 'https://bienapi.xyz/occurrence/species?species=Pinus%20contorta'
-curl 'https://bienapi.xyz/occurrence/genus?genus=Pinus'
-curl 'https://bienapi.xyz/occurrence/family?family=Pinaceae'
-curl -XPOST 'https://bienapi.xyz/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max=37.29; lon_min=-117.13; lon_max=-108.62"
+curl 'https://bienapidev.xyz/occurrence/count'
+curl 'https://bienapidev.xyz/occurrence/species?species=Pinus%20contorta'
+curl 'https://bienapidev.xyz/occurrence/genus?genus=Pinus'
+curl 'https://bienapidev.xyz/occurrence/family?family=Pinaceae'
+curl -XPOST 'https://bienapidev.xyz/occurrence/spatial' -d "wkt=POLYGON((-114.125 34.230,-112.346 34.230,-112.346 32.450,-114.125 32.450,-114.125 34.230)); lat_min=27.31; lat_max=37.29; lon_min=-117.13; lon_max=-108.62"
 ```
 
 </details>
@@ -73,9 +80,9 @@ curl -XPOST 'https://bienapi.xyz/occurrence/spatial' -d "wkt=POLYGON((-114.125 3
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/list/country?country=Canada'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/list?country=Canada'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/list?country=Canada&limit=4'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list/country?country=Canada'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list?country=Canada'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/list?country=Canada&limit=4'
 ```
 
 ### `meta` routes
@@ -87,8 +94,8 @@ curl -H 'Authorization: <api key>' 'https://bienapi.xyz/list?country=Canada&limi
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/meta/version'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/meta/politicalnames'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/meta/version'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/meta/politicalnames'
 ```
 
 ### `phylogeny` routes
@@ -99,15 +106,15 @@ examples:
 
 ```
 # by default uses conservative tree
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/phylogeny'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny'
 # same as
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/phylogeny?type=conservative'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=conservative'
 
 # complete
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/phylogeny?type=complete'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=complete'
 
 # select certain number (default: 10)
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/phylogeny?type=complete&limit=4'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/phylogeny?type=complete&limit=4'
 ```
 
 ### `plot` routes
@@ -125,9 +132,9 @@ curl -H 'Authorization: <api key>' 'https://bienapi.xyz/phylogeny?type=complete&
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/plot/metadata'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/plot/protocols'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/plot/protocols?limit=3'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/metadata'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/protocols'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/plot/protocols?limit=3'
 ```
 
 ### `ranges` routes
@@ -141,18 +148,18 @@ curl -H 'Authorization: <api key>' 'https://bienapi.xyz/plot/protocols?limit=3'
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/list'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/list?limit=3'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/list?limit=3&offset=2'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/list'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/list?limit=3'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/list?limit=3&offset=2'
 
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/species?species=Abies%20lasiocarpa'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/species?species=Abies%20amabilis'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/species?species=Abies%20lasiocarpa'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/species?species=Abies%20lasiocarpa&match_names_only=true'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/species?species=Abies%20amabilis'
 
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/genus?genus=Abies'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/genus?genus=Quercus'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/genus?genus=Abies'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/genus?genus=Quercus'
 
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/ranges/spatial?wkt=POLYGON((-114.03 34.54,-112.67 34.54,-112.67 33.19,-114.03 33.19,-114.03 34.54))'
 ```
 
 ### `stem` routes
@@ -165,16 +172,16 @@ curl -H 'Authorization: <api key>' 'https://bienapi.xyz/ranges/spatial?wkt=POLYG
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/species?species=Abies%20amabilis'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/species?species=Lysimachia%20quadrifolia'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/species?species=Abies%20amabilis'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/species?species=Lysimachia%20quadrifolia'
 
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/genus?genus=Lysimachia'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/genus?genus=Tovomita,Lysimachia'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/genus?genus=Lysimachia'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/genus?genus=Tovomita,Lysimachia'
 
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/family?family=Marantaceae'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/family?family=Marantaceae,Buxaceae'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/family?family=Marantaceae'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/family?family=Marantaceae,Buxaceae'
 
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/datasource?datasource=SALVIAS'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/stem/datasource?datasource=SALVIAS'
 ```
 
 
@@ -182,12 +189,12 @@ curl -H 'Authorization: <api key>' 'https://bienapi.xyz/stem/datasource?datasour
 
 - [ ] `/taxonomy/family/` Extract taxonomic information for families
 - [ ] `/taxonomy/genus/` Extract taxonomic information for genera
-- [ ] `/taxonomy/species/` Extract taxonomic information for species
+- [x] `/taxonomy/species/` Extract taxonomic information for species
 
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/taxonomy/species?species=Poa annua'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/taxonomy/species?species=Poa annua'
 ```
 
 ### `trait` routes
@@ -207,8 +214,8 @@ Note: `mean` removed since that's done client side.
 examples:
 
 ```
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/traits/'
-curl -H 'Authorization: <api key>' 'https://bienapi.xyz/traits/family?family=Poaceae'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/traits/'
+curl -H 'Authorization: <api key>' 'https://bienapidev.xyz/traits/family?family=Poaceae'
 ```
 
 
