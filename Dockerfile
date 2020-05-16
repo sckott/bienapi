@@ -1,4 +1,4 @@
-FROM ruby:2.7.0
+FROM ruby:2.7.1
 
 MAINTAINER Scott Chamberlain <sckott@protonmail.com>
 
