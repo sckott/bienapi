@@ -24,17 +24,6 @@ def check_type(x, name, type = "bool")
   end
 end
 
-# module Models
-#   def self.models
-#     constants.select { |c| const_get(c).is_a?(Class) }
-#   end
-
-#   # class PlotMetadata < Base
-#   #   self.table_name = 'plot_metadata'
-#   #   self.req_field = 'plot_metadata_id'
-#   # end
-# end
-
 class List < ActiveRecord::Base
   self.table_name = 'bien_species_all'
 
@@ -201,7 +190,12 @@ end
 
 class TaxonomySpecies < ActiveRecord::Base
   self.table_name = 'bien_taxonomy'
-
+  class << self
+    def instance_method_already_implemented?(method_name)
+      return true if method_name == 'class'
+      super
+    end
+  end
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
@@ -210,7 +204,7 @@ class TaxonomySpecies < ActiveRecord::Base
       scrubbed_species_binomial scrubbed_author scrubbed_taxonomic_status)
     ord1 = %w(higher_plant_group scrubbed_family scrubbed_genus scrubbed_species_binomial scrubbed_author)
     select(sel1.join(', '))
-        .distinct()
+        .distinct
         .where(sprintf("scrubbed_species_binomial in ('%s')
            AND scrubbed_species_binomial IS NOT NULL", params[:species]))
         .order(ord1.join(', '))
