@@ -381,6 +381,11 @@ class API < Sinatra::Application
     end
   end
 
+  ## trait id by family
+  get '/traits/family/:id/?' do
+    call env.merge("PATH_INFO" => '/traits/family/')
+  end
+
   # occurrence routes
   ## species
   get '/occurrence/species/?' do
