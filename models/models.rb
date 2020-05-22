@@ -241,11 +241,13 @@ end
 
 class TraitsFamily < ActiveRecord::Base
   self.table_name = 'agg_traits'
+  self.primary_key = 'id'
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    return where(primary_key => params[:id]) if params[:id]
     cols = %w(scrubbed_family scrubbed_genus scrubbed_species_binomial trait_name trait_value unit method latitude longitude elevation_m url_source project_pi project_pi_contact access id)
     select(cols.join(', '))
         .where(sprintf("scrubbed_family in ( '%s' )", params[:family]))
@@ -254,6 +256,17 @@ class TraitsFamily < ActiveRecord::Base
         .offset(params[:offset])
   end
 end
+
+# class TraitsFamilyId < ActiveRecord::Base
+#   self.table_name = 'agg_traits'
+#   self.primary_key = 'id'
+#   def self.endpoint(params)
+#     params.delete_if { |k, v| v.nil? || v.empty? }
+#     params = check_limit_offset(params)
+#     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+#     return where(primary_key => params[:id]).select(params[:fields]) if params[:id]
+#   end
+# end
 
 class OccurrenceSpecies < ActiveRecord::Base
   self.table_name = 'view_full_occurrence_individual'
@@ -499,6 +512,7 @@ class StemSpecies < ActiveRecord::Base
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
+    raise Exception.new('must pass "species" parameter') unless params[:species]
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     sel = %w(analytical_stem.scrubbed_species_binomial analytical_stem.latitude 
       analytical_stem.longitude analytical_stem.date_collected  analytical_stem.relative_x_m  analytical_stem.relative_y_m 
@@ -536,6 +550,7 @@ class StemGenus < ActiveRecord::Base
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
+    raise Exception.new('must pass "genus" parameter') unless params[:genus]
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     sel = %w(analytical_stem.scrubbed_genus analytical_stem.scrubbed_species_binomial
       analytical_stem.latitude  analytical_stem.longitude analytical_stem.date_collected  analytical_stem.relative_x_m  
@@ -575,6 +590,7 @@ class StemFamily < ActiveRecord::Base
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
+    raise Exception.new('must pass "family" parameter') unless params[:family]
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     sel = %w(analytical_stem.scrubbed_family analytical_stem.scrubbed_genus analytical_stem.scrubbed_species_binomial 
       analytical_stem.latitude analytical_stem.longitude analytical_stem.date_collected analytical_stem.relative_x_m
@@ -613,6 +629,7 @@ class StemDataSource < ActiveRecord::Base
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
+    raise Exception.new('must pass "datasource" parameter') unless params[:datasource]
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
     sel = %w(analytical_stem.plot_name analytical_stem.subplot analytical_stem.elevation_m analytical_stem.plot_area_ha 
      analytical_stem.sampling_protocol analytical_stem.recorded_by analytical_stem.scrubbed_species_binomial 
