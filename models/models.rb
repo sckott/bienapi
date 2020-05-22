@@ -192,6 +192,7 @@ end
 class TaxonomySpecies < ActiveRecord::Base
   self.table_name = 'bien_taxonomy'
   alias_attribute :clazz, :class
+  alias_attribute :zorder, :order
   class << self
     def instance_method_already_implemented?(method_name)
       return true if method_name == 'class'
