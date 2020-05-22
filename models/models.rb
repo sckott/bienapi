@@ -190,19 +190,19 @@ end
 # end
 
 class TaxonomySpecies < ActiveRecord::Base
-  include SafeAttributes::Base
   self.table_name = 'bien_taxonomy'
-  # class << self
-  #   def instance_method_already_implemented?(method_name)
-  #     return true if method_name == 'class'
-  #     super
-  #   end
-  # end
+  alias_attribute :clazz, :class
+  class << self
+    def instance_method_already_implemented?(method_name)
+      return true if method_name == 'class'
+      super
+    end
+  end
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    sel1 = %w(higher_plant_group "class" superorder "order" scrubbed_family scrubbed_genus
+    sel1 = %w(higher_plant_group 'class' superorder 'order' scrubbed_family scrubbed_genus
       scrubbed_species_binomial scrubbed_author scrubbed_taxonomic_status)
     ord1 = %w(higher_plant_group scrubbed_family scrubbed_genus scrubbed_species_binomial scrubbed_author)
     select(sel1.join(', '))
