@@ -1,4 +1,5 @@
 # require_relative 'base'
+require 'safe_attributes/base'
 
 def check_limit_offset(params)
   %i(limit offset).each do |p|
@@ -189,13 +190,14 @@ end
 # end
 
 class TaxonomySpecies < ActiveRecord::Base
+  include SafeAttributes::Base
   self.table_name = 'bien_taxonomy'
-  class << self
-    def instance_method_already_implemented?(method_name)
-      return true if method_name == 'class'
-      super
-    end
-  end
+  # class << self
+  #   def instance_method_already_implemented?(method_name)
+  #     return true if method_name == 'class'
+  #     super
+  #   end
+  # end
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
