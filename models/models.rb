@@ -241,13 +241,11 @@ end
 
 class TraitsFamily < ActiveRecord::Base
   self.table_name = 'agg_traits'
-  self.primary_key = 'id'
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    return where(primary_key => params[:id]) if params[:id]
     cols = %w(scrubbed_family scrubbed_genus scrubbed_species_binomial trait_name trait_value unit method latitude longitude elevation_m url_source project_pi project_pi_contact access id)
     select(cols.join(', '))
         .where(sprintf("scrubbed_family in ( '%s' )", params[:family]))
@@ -257,16 +255,13 @@ class TraitsFamily < ActiveRecord::Base
   end
 end
 
-# class TraitsFamilyId < ActiveRecord::Base
-#   self.table_name = 'agg_traits'
-#   self.primary_key = 'id'
-#   def self.endpoint(params)
-#     params.delete_if { |k, v| v.nil? || v.empty? }
-#     params = check_limit_offset(params)
-#     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-#     return where(primary_key => params[:id]).select(params[:fields]) if params[:id]
-#   end
-# end
+class TraitsFamilyId < ActiveRecord::Base
+  self.table_name = 'agg_traits'
+  self.primary_key = 'id'
+  def self.endpoint(params)
+    return where(primary_key => params[:id])
+  end
+end
 
 class OccurrenceSpecies < ActiveRecord::Base
   self.table_name = 'view_full_occurrence_individual'

@@ -383,7 +383,17 @@ class API < Sinatra::Application
 
   ## trait id by family
   get '/traits/family/:id/?' do
-    call env.merge("PATH_INFO" => '/traits/family/')
+    # call env.merge("PATH_INFO" => '/traits/family/')
+    authorized?
+    halt_method
+    begin
+      data = TraitsFamilyId.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
+    end
   end
 
   # occurrence routes
