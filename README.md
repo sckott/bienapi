@@ -1,6 +1,8 @@
 BIEN API
 ========
 
+Docs: https://ropenscilabs.github.io/bienapidocs/
+
 ## Authentication
 
 An API token is required for most routes. Tokens are passed in a header like:
