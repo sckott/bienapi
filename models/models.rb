@@ -274,6 +274,7 @@ class OccurrenceSpecies < ActiveRecord::Base
     cols = %w(taxonobservation_id scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
     select(cols.join(', '))
         .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND higher_plant_group IS NOT NULL AND (is_geovalid = 1 OR is_geovalid IS NULL)", params[:species]))
+        .order("scrubbed_species_binomial")
         .limit(params[:limit] || 10)
         .offset(params[:offset])
   end
