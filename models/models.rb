@@ -265,12 +265,13 @@ end
 
 class OccurrenceSpecies < ActiveRecord::Base
   self.table_name = 'view_full_occurrence_individual'
+  self.primary_key = 'taxonobservation_id'
 
   def self.endpoint(params)
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    cols = %w(scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
+    cols = %w(taxonobservation_id scrubbed_species_binomial latitude longitude date_collected datasource dataset dataowner custodial_institution_codes collection_code view_full_occurrence_individual.datasource_id)
     select(cols.join(', '))
         .where(sprintf("scrubbed_species_binomial in ( '%s' ) AND higher_plant_group IS NOT NULL AND (is_geovalid = 1 OR is_geovalid IS NULL)", params[:species]))
         .order("scrubbed_species_binomial")
