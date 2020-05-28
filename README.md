@@ -48,9 +48,9 @@ and you'll get back a token.
 
 ### `occurrence` routes
 
-- [ ] `/occurrence/species/` Extract occurrence data for specified species from BIEN (~ `BIEN::BIEN_occurrence_species`)
-- [ ] `/occurrence/genus/` Extract occurrence data for specified genus from BIEN (~ `BIEN::BIEN_occurrence_genus`)
-- [ ] `/occurrence/family/` Extract occurrence data for specified family from BIEN (~ `BIEN::BIEN_occurrence_family`)
+- [x] `/occurrence/species/` Extract occurrence data for specified species from BIEN (~ `BIEN::BIEN_occurrence_species`)
+- [x] `/occurrence/genus/` Extract occurrence data for specified genus from BIEN (~ `BIEN::BIEN_occurrence_genus`)
+- [x] `/occurrence/family/` Extract occurrence data for specified family from BIEN (~ `BIEN::BIEN_occurrence_family`)
 - [ ] `/occurrence/spatial/` Extract occurrence data for specified polygons (WKT) or bounding box (~ `BIEN::BIEN_occurrence_spatialpolygons`)
 - [ ] `/occurrence/state/` Extract occurrence data for a state (~ `BIEN::BIEN_occurrence_state`)
 - [ ] `/occurrence/county/` Extract occurrence data for a county (~ `BIEN::BIEN_occurrence_county`)
