@@ -1,6 +1,8 @@
 BIEN API
 ========
 
+[![tests](https://github.com/ropenscilabs/bienapi/workflows/Ruby/badge.svg)](https://github.com/ropenscilabs/bienapi/actions)
+
 Docs: https://ropenscilabs.github.io/bienapidocs/
 
 ## Authentication
