@@ -515,7 +515,7 @@ class API < Sinatra::Application
     authorized?
     begin
       halt_method
-      data = CitationsTrait.endpoint
+      data = CitationsTrait.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { data: data, error: nil }
       serve_data(ha, data)
@@ -527,7 +527,7 @@ class API < Sinatra::Application
     authorized?
     begin
       halt_method
-      data = CitationsOccurrence.endpoint
+      data = CitationsOccurrence.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
       ha = { data: data, error: nil }
       serve_data(ha, data)

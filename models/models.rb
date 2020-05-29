@@ -402,23 +402,26 @@ end
 ### citations
 class CitationsTrait < ActiveRecord::Base
   self.table_name = 'agg_traits'
-  def self.endpoint
+  def self.endpoint(params)
     cols = %w(citation_bibtex source_citation source url_source access project_pi project_pi_contact)
-    select(cols.join(', '))
-      .distinct
-      .where(id: params[:id])
+    select(cols.join(', ')).distinct.where(id: params[:id])
   end
 end
 
 class CitationsOccurrence < ActiveRecord::Base
   self.table_name = 'view_full_occurrence_individual'
-  def self.endpoint
-    cols = %w(citation_bibtex source_citation source url_source access project_pi project_pi_contact)
-    select(cols.join(', '))
-      .distinct
-      .where(id: params[:id])
+  self.primary_key = 'datasource_id'
+  def self.endpoint(params)
+    find_by_sql("WITH a AS (SELECT * FROM datasource where datasource_id = %s) SELECT * FROM datasource where datasource_id in (SELECT proximate_provider_datasource_id FROM a) OR datasource_id in (SELECT datasource_id FROM a);" % params[:id])
   end
 end
+
+# params = {id: "22"}
+# data = CitationsOccurrence.endpoint(params);
+# data.size
+# data
+# data.as_json
+# data.explain
 
 ### political names
 class MetaPoliticalNames < ActiveRecord::Base
