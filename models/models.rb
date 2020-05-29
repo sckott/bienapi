@@ -399,6 +399,27 @@ class MetaVersion < ActiveRecord::Base
   end
 end
 
+### citations
+class CitationsTrait < ActiveRecord::Base
+  self.table_name = 'agg_traits'
+  def self.endpoint
+    cols = %w(citation_bibtex source_citation source url_source access project_pi project_pi_contact)
+    select(cols.join(', '))
+      .distinct
+      .where(id: params[:id])
+  end
+end
+
+class CitationsOccurrence < ActiveRecord::Base
+  self.table_name = 'view_full_occurrence_individual'
+  def self.endpoint
+    cols = %w(citation_bibtex source_citation source url_source access project_pi project_pi_contact)
+    select(cols.join(', '))
+      .distinct
+      .where(id: params[:id])
+  end
+end
+
 ### political names
 class MetaPoliticalNames < ActiveRecord::Base
   self.table_name = 'county_parish'

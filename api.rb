@@ -404,7 +404,7 @@ class API < Sinatra::Application
     begin
       data = OccurrenceSpecies.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      ha = { count: nil, returned: data.size, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
@@ -418,7 +418,7 @@ class API < Sinatra::Application
     begin
       data = OccurrenceGenus.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      ha = { count: nil, returned: data.size, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
@@ -432,7 +432,7 @@ class API < Sinatra::Application
     begin
       data = OccurrenceFamily.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      ha = { count: nil, returned: data.size, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
@@ -503,6 +503,31 @@ class API < Sinatra::Application
     begin
       halt_method
       data = MetaVersion.endpoint
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { data: nil, error: { message: e.message }}.to_json
+    end
+  end
+
+  get '/meta/citations/traits/:id/?' do
+    authorized?
+    begin
+      halt_method
+      data = CitationsTrait.endpoint
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { data: nil, error: { message: e.message }}.to_json
+    end
+  end
+  get '/meta/citations/occurrence/:id/?' do
+    authorized?
+    begin
+      halt_method
+      data = CitationsOccurrence.endpoint
       raise Exception.new('no results found') if data.length.zero?
       ha = { data: data, error: nil }
       serve_data(ha, data)
