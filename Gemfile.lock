@@ -19,17 +19,21 @@ GEM
     email_address (0.1.17)
       netaddr (>= 2.0.4, < 3)
       simpleidn
+    faraday (1.0.1)
+      multipart-post (>= 1.2, < 3)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     minitest (5.14.1)
     mongo (2.12.1)
       bson (>= 4.8.2, < 5.0.0)
     multi_json (1.14.1)
+    multipart-post (2.1.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     netaddr (2.0.4)
     nio4r (2.5.2)
     pg (1.2.3)
+    power_assert (1.2.0)
     puma (4.3.5)
       nio4r (~> 2.0)
     rack (2.2.2)
@@ -37,6 +41,7 @@ GEM
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
+    rake (13.0.1)
     redis (4.1.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -68,6 +73,8 @@ GEM
       rack-protection (= 2.0.8.1)
       sinatra (= 2.0.8.1)
       tilt (~> 2.0)
+    test-unit (3.3.5)
+      power_assert
     thread_safe (0.3.6)
     tilt (2.0.10)
     tzinfo (1.2.7)
@@ -83,16 +90,19 @@ PLATFORMS
 DEPENDENCIES
   activerecord (~> 6.0, >= 6.0.2)
   email_address (~> 0.1.17)
+  faraday (~> 1.0, >= 1.0.1)
   mongo (~> 2.8)
   multi_json (~> 1.14, >= 1.14.1)
   pg (~> 1.2, >= 1.2.3)
   puma (~> 4.3)
   rack-test (~> 1.0)
+  rake (~> 13.0, >= 13.0.1)
   redis (~> 4.1, >= 4.1.4)
   rspec (~> 3.7)
   safe_attributes (~> 1.0, >= 1.0.10)
   sinatra (~> 2.0, >= 2.0.8.1)
   sinatra-contrib (~> 2.0, >= 2.0.8.1)
+  test-unit (~> 3.3, >= 3.3.5)
 
 RUBY VERSION
    ruby 2.7.1p83
