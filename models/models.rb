@@ -409,19 +409,12 @@ class CitationsTrait < ActiveRecord::Base
 end
 
 class CitationsOccurrence < ActiveRecord::Base
-  self.table_name = 'view_full_occurrence_individual'
+  self.table_name = 'datasource'
   self.primary_key = 'datasource_id'
   def self.endpoint(params)
     find_by_sql("WITH a AS (SELECT * FROM datasource where datasource_id = %s) SELECT * FROM datasource where datasource_id in (SELECT proximate_provider_datasource_id FROM a) OR datasource_id in (SELECT datasource_id FROM a);" % params[:id])
   end
 end
-
-# params = {id: "22"}
-# data = CitationsOccurrence.endpoint(params);
-# data.size
-# data
-# data.as_json
-# data.explain
 
 ### political names
 class MetaPoliticalNames < ActiveRecord::Base
