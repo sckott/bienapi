@@ -191,6 +191,7 @@ end
 
 class TaxonomySpecies < ActiveRecord::Base
   self.table_name = 'bien_taxonomy'
+  self.primary_key = 'bien_taxonomy_id'
   alias_attribute :clazz, :class
   alias_attribute :zorder, :order
   class << self
@@ -203,26 +204,73 @@ class TaxonomySpecies < ActiveRecord::Base
     params.delete_if { |k, v| v.nil? || v.empty? }
     params = check_limit_offset(params)
     raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
-    sel1 = %w(higher_plant_group 'class' superorder 'order' scrubbed_family scrubbed_genus
+    sel1 = %w(bien_taxonomy_id higher_plant_group taxon_class superorder taxon_order scrubbed_family scrubbed_genus
       scrubbed_species_binomial scrubbed_author scrubbed_taxonomic_status)
     ord1 = %w(higher_plant_group scrubbed_family scrubbed_genus scrubbed_species_binomial scrubbed_author)
     select(sel1.join(', '))
         .distinct
-        .where(sprintf("scrubbed_species_binomial in ('%s')
-           AND scrubbed_species_binomial IS NOT NULL", params[:species]))
+        .where(scrubbed_species_binomial: params[:species]).where.not(scrubbed_species_binomial: nil)
         .order(ord1.join(', '))
         .limit(params[:limit] || 10)
         .offset(params[:offset])
   end
 end
 
-# SELECT DISTINCT 
-#   higher_plant_group, "class", superorder, "order", scrubbed_family,
-#   scrubbed_genus,scrubbed_species_binomial,scrubbed_author,scrubbed_taxonomic_status  
-# FROM bien_taxonomy  
-# WHERE scrubbed_species_binomial in ( 'Acer nigrum' ) 
-# AND scrubbed_species_binomial IS NOT NULL  
-# ORDER BY higher_plant_group,scrubbed_family,scrubbed_genus,scrubbed_species_binomial,scrubbed_author
+class TaxonomyGenus < ActiveRecord::Base
+  self.table_name = 'bien_taxonomy'
+  self.primary_key = 'bien_taxonomy_id'
+  alias_attribute :clazz, :class
+  alias_attribute :zorder, :order
+  class << self
+    def instance_method_already_implemented?(method_name)
+      return true if method_name == 'class'
+      super
+    end
+  end
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    params = check_limit_offset(params)
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    sel1 = %w(bien_taxonomy_id higher_plant_group taxon_class superorder taxon_order scrubbed_family scrubbed_genus
+      scrubbed_species_binomial scrubbed_author scrubbed_taxonomic_status)
+    ord1 = %w(higher_plant_group scrubbed_family scrubbed_genus scrubbed_species_binomial scrubbed_author)
+    select(sel1.join(', '))
+        .distinct
+        .where(scrubbed_genus: params[:genus]).where.not(scrubbed_species_binomial: nil)
+        .order(ord1.join(', '))
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+class TaxonomyFamily < ActiveRecord::Base
+  self.table_name = 'bien_taxonomy'
+  self.primary_key = 'bien_taxonomy_id'
+  alias_attribute :clazz, :class
+  alias_attribute :zorder, :order
+  class << self
+    def instance_method_already_implemented?(method_name)
+      return true if method_name == 'class'
+      super
+    end
+  end
+  def self.endpoint(params)
+    params.delete_if { |k, v| v.nil? || v.empty? }
+    params = check_limit_offset(params)
+    raise Exception.new('limit too large (max 1000)') unless (params[:limit] || 0) <= 1000
+    sel1 = %w(bien_taxonomy_id higher_plant_group taxon_class superorder taxon_order scrubbed_family scrubbed_genus
+      scrubbed_species_binomial scrubbed_author scrubbed_taxonomic_status)
+    ord1 = %w(higher_plant_group scrubbed_family scrubbed_genus scrubbed_species_binomial scrubbed_author)
+    select(sel1.join(', '))
+        .distinct
+        .where(scrubbed_family: params[:family]).where.not(scrubbed_species_binomial: nil)
+        .order(ord1.join(', '))
+        .limit(params[:limit] || 10)
+        .offset(params[:offset])
+  end
+end
+
+
 
 class Traits < ActiveRecord::Base
   self.table_name = 'agg_traits'

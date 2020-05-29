@@ -91,10 +91,12 @@ curl -H 'Authorization: token' 'https://bienapi.xyz/list?country=Canada&limit=4'
 ### `meta` routes
 
 - [x] `/meta/version/` Get current BIEN database version and release date (~ `BIEN::BIEN_metadata_database_version`)
-- [ ] `/meta/citations/` Get citations for BIEN data (~ `BIEN::BIEN_metadata_citation`)
+- [x] `/meta/citations/traits/:id/` Get citations for a trait (~ `BIEN::BIEN_metadata_citation`)
+- [x] `/meta/citations/occurrence/:id/` Get citations for an occurence (~ `BIEN::BIEN_metadata_citation`)
 - [x] `/meta/politicalnames/` Get political divisions and associated geonames codes (~ `BIEN::BIEN_metadata_list_political_names`)
 
 examples:
+
 
 ```
 curl -H 'Authorization: token' 'https://bienapi.xyz/meta/version'
@@ -192,11 +194,17 @@ curl -H 'Authorization: token' 'https://bienapi.xyz/stem/datasource?datasource=S
 
 ### `taxonomy` routes
 
-- [ ] `/taxonomy/family/` Extract taxonomic information for families
-- [ ] `/taxonomy/genus/` Extract taxonomic information for genera
-- [ ] `/taxonomy/species/` Extract taxonomic information for species
+- [x] `/taxonomy/family/` Extract taxonomic information for families
+- [x] `/taxonomy/genus/` Extract taxonomic information for genera
+- [x] `/taxonomy/species/` Extract taxonomic information for species
 
-Doesn't work, can't get queries to the database to work for this sql table.
+examples:
+
+```
+curl -H 'Authorization: token' 'https://bienapi.xyz/taxonomy/species?species=Abies%20amabilis'
+curl -H 'Authorization: token' 'https://bienapi.xyz/taxonomy/genus?genus=Abies'
+curl -H 'Authorization: token' 'https://bienapi.xyz/taxonomy/family?family=Pinaceae'
+```
 
 ### `trait` routes
 

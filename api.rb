@@ -460,7 +460,7 @@ class API < Sinatra::Application
     begin
       data = OccurrenceCount.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil ).count(1), returned: data.length, data: data, error: nil }
+      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.message }}.to_json
@@ -469,14 +469,39 @@ class API < Sinatra::Application
 
 
   # taxonomy routes
-  ## by species
   get '/taxonomy/species/?' do
     authorized?
     begin
       halt_method
       data = TaxonomySpecies.endpoint(params)
       raise Exception.new('no results found') if data.length.zero?
-      ha = { count: data.limit(nil).count(1), returned: data.length, data: data, error: nil }
+      ha = { count: data.limit(nil).size, returned: data.size, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.backtrace }}.to_json
+    end
+  end
+
+  get '/taxonomy/genus/?' do
+    authorized?
+    begin
+      halt_method
+      data = TaxonomyGenus.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).size, returned: data.size, data: data, error: nil }
+      serve_data(ha, data)
+    rescue Exception => e
+      halt 400, { count: 0, returned: 0, data: nil, error: { message: e.backtrace }}.to_json
+    end
+  end
+
+  get '/taxonomy/family/?' do
+    authorized?
+    begin
+      halt_method
+      data = TaxonomyFamily.endpoint(params)
+      raise Exception.new('no results found') if data.length.zero?
+      ha = { count: data.limit(nil).size, returned: data.size, data: data, error: nil }
       serve_data(ha, data)
     rescue Exception => e
       halt 400, { count: 0, returned: 0, data: nil, error: { message: e.backtrace }}.to_json
@@ -523,6 +548,7 @@ class API < Sinatra::Application
       halt 400, { data: nil, error: { message: e.message }}.to_json
     end
   end
+
   get '/meta/citations/occurrence/:id/?' do
     authorized?
     begin
