@@ -71,10 +71,10 @@ class API < Sinatra::Application
   $paths_to_ignore = ["/", "/heartbeat", "/heartbeat/", "/token", "/token/"]
 
   before do
-    puts '[env]'
-    p env
-    puts '[Params]'
-    p params
+    # puts '[env]'
+    # p env
+    # puts '[Params]'
+    # p params
     # puts '[Authorization]'
     # p request.env['HTTP_AUTHORIZATION'].slice(7..-1)
 
