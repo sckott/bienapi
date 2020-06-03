@@ -5,3 +5,6 @@ active_record_notes.rb
 container_notes.md
 bienapi_admin.txt
 Caddyfile
+api-def.yaml
+routes_notes.md
+to-do.md
