@@ -88,9 +88,11 @@ class API < Sinatra::Application
     cache_control :public, :must_revalidate, max_age: 60
 
     # use redis caching
+    acc = request.env['HTTP_ACCEPT']
+    acc = acc == "*/*" ? "application/json" : acc
     if $config['caching'] && $use_redis && authorized?
       if !$paths_to_ignore.include? request.path_info
-        @cache_key = Digest::MD5.hexdigest(request.url)
+        @cache_key = Digest::MD5.hexdigest([request.url, acc].join('-'))
         if $redis.exists(@cache_key)
           headers 'Cache-Hit' => 'true'
           halt 200, $redis.get(@cache_key)
@@ -98,12 +100,12 @@ class API < Sinatra::Application
       end
     end
 
-    def content_type_ok?
-      ctype = request.env['CONTENT_TYPE']
-      ['application/json', 'text/csv'].include? ctype
+    def accept_ok?
+      accept = request.env['HTTP_ACCEPT']
+      ['application/json', 'text/csv'].include? accept
     end
 
-    415 unless content_type_ok?
+    415 unless accept_ok?
     pass if %w[/ /heartbeat /heartbeat/].include? request.path_info
     # halt 401, { error: 'not authorized' }.to_json unless !request.env['HTTP_AUTHORIZATION'].nil?
     # httpauth = request.env['HTTP_AUTHORIZATION'] || ""
@@ -129,13 +131,15 @@ class API < Sinatra::Application
     end
 
     def serve_data(ha, data)
-      # puts '[CONTENT_TYPE]'
-      # puts request.env['CONTENT_TYPE'].nil?
-      case request.env['CONTENT_TYPE']
+      # puts '[HTTP_ACCEPT]'
+      # puts request.env['HTTP_ACCEPT'].nil?
+      case request.env['HTTP_ACCEPT']
       when 'application/json'
         ha.to_json
       when 'text/csv'
         to_csv(data)
+      when '*/*'
+        ha.to_json
       when nil
         ha.to_json
       else
