@@ -16,6 +16,6 @@ group :test do
   gem 'rake', '~> 13.0', '>= 13.0.1'
   gem 'test-unit', '~> 3.3', '>= 3.3.5'
   gem 'faraday', '~> 1.0', '>= 1.0.1'
-  gem 'rack-test', '~> 1.0', require: 'rack/test'
+  gem 'rack-test', '~> 1.1', require: 'rack/test'
   gem 'rspec', '~> 3.7'
 end
